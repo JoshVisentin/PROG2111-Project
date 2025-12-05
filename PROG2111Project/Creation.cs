@@ -7,372 +7,299 @@ namespace PROG2111Project {
         private static bool developersCreated = false;
         private static bool genresCreated = false;
         private static bool gamesCreated = false;
-        private static bool librariesCreated = false;
+        private static bool gameGenresCreated = false;
         private static bool usersCreated = false;
+        private static bool gameLibraryCreated = false;
+        public static void InitializeCreatedFlags() {
+            publishersCreated  = DbHelper.TableExists("Publisher")   && DbHelper.TableHasRows("Publisher");
+            developersCreated  = DbHelper.TableExists("Developer")   && DbHelper.TableHasRows("Developer");
+            genresCreated      = DbHelper.TableExists("Genre")       && DbHelper.TableHasRows("Genre");
+            gamesCreated       = DbHelper.TableExists("Game")        && DbHelper.TableHasRows("Game");
+            gameGenresCreated  = DbHelper.TableExists("GameGenre")   && DbHelper.TableHasRows("GameGenre");
+            usersCreated       = DbHelper.TableExists("SteamUser")   && DbHelper.TableHasRows("SteamUser");
+            gameLibraryCreated = DbHelper.TableExists("GameLibrary") && DbHelper.TableHasRows("GameLibrary");
+        }
 
         public static void CreatePublishers(){ 
-            string query = "SELECT * FROM Publisher";
-            try{
-                MySqlConnection conn = new MySqlConnection(Program.connStr);
-                DataSet ds = new DataSet();
+            if (publishersCreated){
+                Console.WriteLine("Publishers already created.");
+            } else if (!DbHelper.EnsureTableExists("Publisher")) {
+                Console.WriteLine("Publishers table not found, create table first.");
+            } else {
 
-                conn.Open();
-                MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
-                adapter.Fill(ds, "Publisher");
-                conn.Close();
+                DbHelper.InsertRows("Publisher", table => {
+                    DataRow r1 = table.NewRow();
+                    r1["Name"] = "GrandmawsBakery";
+                    r1["Website"] = "Cookies.net";
+                    table.Rows.Add(r1);
 
-                DataTable table = ds.Tables["Publisher"];    
-            
-                DataRow newRow1 = table.NewRow();
-                newRow1["PublisherID"] = "01";
-                newRow1["Name"] = "GrandmawsBakery";
-                newRow1["Website"] = "Cookies.net";
-                table.Rows.Add(newRow1);
-                DataRow newRow2 = table.NewRow();
-                newRow2["PublisherID"] = "03";
-                newRow2["Name"] = "SoftMintPublishing";
-                newRow2["Website"] = "softmintpub.com";
-                table.Rows.Add(newRow2);
-                DataRow newRow3 = table.NewRow();
-                newRow3["PublisherID"] = "04";
-                newRow3["Name"] = "Pokemon Company";
-                newRow3["Website"] = "pokemon.com";
-                table.Rows.Add(newRow3);
+                    DataRow r2 = table.NewRow();
+                    r2["Name"] = "SoftMintPublishing";
+                    r2["Website"] = "softmintpub.com";
+                    table.Rows.Add(r2);
 
-                using (MySqlConnection conn2 = new MySqlConnection(Program.connStr)){
-                    conn2.Open();
-
-                    MySqlDataAdapter adapter2 = new MySqlDataAdapter(query, conn2);
-                    MySqlCommandBuilder builder = new MySqlCommandBuilder(adapter2);
-
-                    adapter2.Update(ds, "Publisher");
-                }
-            } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
-            }
-            Console.WriteLine("Publishers Successfully Created.");
-            publishersCreated = true;
+                    DataRow r3 = table.NewRow();
+                    r3["Name"] = "Pokemon Company";
+                    r3["Website"] = "pokemon.com";
+                    table.Rows.Add(r3);
+                });
+                Console.WriteLine("Publishers Successfully Created.");
+                publishersCreated = true;
+            }   
         }
     
         public static void CreateDevelopers(){ 
-            string query = "SELECT * FROM Developer";
-            try{
-                MySqlConnection conn = new MySqlConnection(Program.connStr);
-                DataSet ds = new DataSet();
+            if (developersCreated){
+                Console.WriteLine("Developers already created.");
+            } else if (!DbHelper.EnsureTableExists("Developer")) {
+                Console.WriteLine("Developers table not found, create table first.");
+            } else {
 
-                conn.Open();
-                MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
-                adapter.Fill(ds, "Developer");
-                conn.Close();
+                DbHelper.InsertRows("Developer", table => {
+                    DataRow r1 = table.NewRow();
+                    r1["Name"] = "Dave";
+                    r1["Website"] = "dave.net";
+                    table.Rows.Add(r1);
 
-                DataTable table = ds.Tables["Developer"];    
-            
-                DataRow newRow1 = table.NewRow();
-                newRow1["DeveloperID"] = "01";
-                newRow1["Name"] = "Dave";
-                newRow1["Website"] = "dave.net";
-                table.Rows.Add(newRow1);
-                DataRow newRow2 = table.NewRow();
-                newRow2["DeveloperID"] = "02";
-                newRow2["Name"] = "Buster";
-                newRow2["Website"] = "bust.com";
-                table.Rows.Add(newRow2);
-                DataRow newRow3 = table.NewRow();
-                newRow3["DeveloperID"] = "03";
-                newRow3["Name"] = "LTech";
-                newRow3["Website"] = "lych.com";
-                table.Rows.Add(newRow3);
-                DataRow newRow4 = table.NewRow();
-                newRow4["DeveloperID"] = "04";
-                newRow4["Name"] = "Pokemon Company";
-                newRow4["Website"] = "pokemon.com";
-                table.Rows.Add(newRow4);
+                    DataRow r2 = table.NewRow();
+                    r2["Name"] = "LindaSoft";
+                    r2["Website"] = "lindasoft.dev";
+                    table.Rows.Add(r2);
 
-                using (MySqlConnection conn2 = new MySqlConnection(Program.connStr)){
-                    conn2.Open();
+                    DataRow r3 = table.NewRow();
+                    r3["Name"] = "Pokemon Company";
+                    r3["Website"] = "pokemon.com";
+                    table.Rows.Add(r3);
+                });
 
-                    MySqlDataAdapter adapter2 = new MySqlDataAdapter(query, conn2);
-                    MySqlCommandBuilder builder = new MySqlCommandBuilder(adapter2);
-
-                    adapter2.Update(ds, "Developer");
-                }
-            } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("Publishers Successfully Created.");
+                publishersCreated = true; 
             }
-            Console.WriteLine("Developers Successfully Created.");
-            developersCreated = true;
         }
     
         public static void CreateGenres(){ 
-            string query = "SELECT * FROM Genre";
-            try{
-                MySqlConnection conn = new MySqlConnection(Program.connStr);
-                DataSet ds = new DataSet();
+            if (genresCreated){
+                Console.WriteLine("Genres already created.");
+            } else if (!DbHelper.EnsureTableExists("Genre")) {
+                Console.WriteLine("Genres table not found, create table first.");
+            } else {
 
-                conn.Open();
-                MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
-                adapter.Fill(ds, "Genre");
-                conn.Close();
+                DbHelper.InsertRows("Genre", table => {
+                    string[] genreNames = {
+                        "DatingSim", "Horror", "Grand Strategy",
+                        "Romance", "SciFi", "FarmingSim",
+                        "Idle", "RPG"
+                    };
 
-                DataTable table = ds.Tables["Genre"];    
-            
-                DataRow newRow1 = table.NewRow();
-                newRow1["GenreID"] = "01";
-                newRow1["Name"] = "DatingSim";
-                table.Rows.Add(newRow1);
-                DataRow newRow2 = table.NewRow();
-                newRow2["GenreID"] = "02";
-                newRow2["Name"] = "Horror";
-                table.Rows.Add(newRow2);
-                DataRow newRow3 = table.NewRow();
-                newRow3["GenreID"] = "03";
-                newRow3["Name"] = "Grand Stratgey";
-                table.Rows.Add(newRow3);
-                DataRow newRow4 = table.NewRow();
-                newRow4["GenreID"] = "04";
-                newRow4["Name"] = "Romance";
-                table.Rows.Add(newRow4);
-                DataRow newRow5 = table.NewRow();
-                newRow5["GenreID"] = "05";
-                newRow5["Name"] = "SciFi";
-                table.Rows.Add(newRow5);
-                DataRow newRow6 = table.NewRow();
-                newRow6["GenreID"] = "06";
-                newRow6["Name"] = "FarmingSim";
-                table.Rows.Add(newRow6);
-                DataRow newRow7 = table.NewRow();
-                newRow7["GenreID"] = "07";
-                newRow7["Name"] = "Idle";
-                table.Rows.Add(newRow7);
-                DataRow newRow8 = table.NewRow();
-                newRow8["GenreID"] = "08";
-                newRow8["Name"] = "RPG";
-                table.Rows.Add(newRow8);
-
-                using (MySqlConnection conn2 = new MySqlConnection(Program.connStr)){
-                    conn2.Open();
-
-                    MySqlDataAdapter adapter2 = new MySqlDataAdapter(query, conn2);
-                    MySqlCommandBuilder builder = new MySqlCommandBuilder(adapter2);
-
-                    adapter2.Update(ds, "Genre");
-                }
-            } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
+                    foreach (string g in genreNames){
+                        DataRow row = table.NewRow();
+                        row["Name"] = g;
+                        table.Rows.Add(row);
+                    }
+                });
+                Console.WriteLine("Genres Successfully Created.");
+                genresCreated = true;
             }
-            Console.WriteLine("Genres Successfully Created.");
-            genresCreated = true;
         }
 
         public static void CreateGames(){
-            if (!publishersCreated){
-                Console.WriteLine("Publishers not yet created. Creating Publishers...");
-                CreatePublishers();
-            }
-            if (!developersCreated){
-                Console.WriteLine("Developers not yet created. Creating Developers...");
-                CreateDevelopers();
-            }
-            if (!genresCreated){
-                Console.WriteLine("Genres not yet created. Creating Genres...");
-                CreateGenres();
-            }
-
-
-            string query = "SELECT * FROM Game";
-            try{
-                MySqlConnection conn = new MySqlConnection(Program.connStr);
-                DataSet ds = new DataSet();
-
-                conn.Open();
-                MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
-                adapter.Fill(ds, "Game");
-                conn.Close();
-
-                DataTable table = ds.Tables["Game"];
-
-                DataRow newRow1 = table.NewRow();
-                newRow1["GameID"] = "01";
-                newRow1["DeveloperID"] = "01";
-                newRow1["PublisherID"] = "01";
-                newRow1["GenreID"] = "01";
-                newRow1["Title"] = "CokieClicker";
-                newRow1["SystemSupport"] = "Mac";
-                newRow1["AgeRating"] = "M";
-                newRow1["Description"] = "A Game";
-                newRow1["ReleaseDate"] = "11/9/2001";
-                newRow1["Price"] = "999.99";
-                newRow1["Achievements"] = "200";
-                table.Rows.Add(newRow1);
-                DataRow newRow2 = table.NewRow();
-                newRow2["GameID"] = "02";
-                newRow2["DeveloperID"] = "03";
-                newRow2["PublisherID"] = "03";
-                newRow2["GenreID"] = "04";
-                newRow2["Title"] = "StarBuilder";
-                newRow2["SystemSupport"] = "Windows";
-                newRow2["AgeRating"] = "T";
-                newRow2["Description"] = "Build Your Own Galaxy";
-                newRow2["ReleaseDate"] = "22/7/2010";
-                newRow2["Price"] = "59.49";
-                newRow2["Achievements"] = "145";
-                table.Rows.Add(newRow2);
-                DataRow newRow3 = table.NewRow();
-                newRow3["GameID"] = "03";
-                newRow3["DeveloperID"] = "01";
-                newRow3["PublisherID"] = "03";
-                newRow3["GenreID"] = "04";
-                newRow3["Title"] = "StarBuilder";
-                newRow3["SystemSupport"] = "Windows";
-                newRow3["AgeRating"] = "E";
-                newRow3["Description"] = "Keep you sane";
-                newRow3["ReleaseDate"] = "2/6/1998";
-                newRow3["Price"] = "0";
-                newRow3["Achievements"] = "5";
-                table.Rows.Add(newRow3);
-                DataRow newRow4 = table.NewRow();
-                newRow4["GameID"] = "04";
-                newRow4["DeveloperID"] = "04";
-                newRow4["PublisherID"] = "04";
-                newRow4["GenreID"] = "08";
-                newRow4["Title"] = "PokemonTCG";
-                newRow4["SystemSupport"] = "Windows";
-                newRow4["AgeRating"] = "R";
-                newRow4["Description"] = "A Game";
-                newRow4["ReleaseDate"] = "11/9/2001";
-                newRow4["Price"] = "999.99";
-                newRow4["Achievements"] = "2000";
-                table.Rows.Add(newRow4);
-
-                using (MySqlConnection conn2 = new MySqlConnection(Program.connStr)){
-                    conn2.Open();
-
-                    MySqlDataAdapter adapter2 = new MySqlDataAdapter(query, conn2);
-                    MySqlCommandBuilder builder = new MySqlCommandBuilder(adapter2);
-
-                    adapter2.Update(ds, "Game");
+            if (gamesCreated){
+                Console.WriteLine("Games already created.");
+            } else if (!DbHelper.EnsureTableExists("Game")) {
+                Console.WriteLine("Games table not found, create table first.");
+            } else {
+                if (!publishersCreated){
+                    Console.WriteLine("Publishers not yet created. Creating Publishers...");
+                    CreatePublishers();
                 }
-            } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
+                if (!developersCreated){
+                    Console.WriteLine("Developers not yet created. Creating Developers...");
+                    CreateDevelopers();
+                }
+            
+                DbHelper.InsertRows("Game", table => {
+                    DataRow g1 = table.NewRow();
+                    g1["DeveloperID"] = 1;
+                    g1["PublisherID"] = 1;
+                    g1["Title"] = "CookieClicker";
+                    g1["SystemSupport"] = "Mac";
+                    g1["AgeRating"] = "M";
+                    g1["Description"] = "A Game";
+                    g1["ReleaseDate"] = DateTime.Parse("2001-11-09");
+                    g1["Price"] = 999.99;
+                    g1["Achievements"] = 200;
+                    table.Rows.Add(g1);
+
+                    DataRow g2 = table.NewRow();
+                    g2["DeveloperID"] = 3;
+                    g2["PublisherID"] = 3;
+                    g2["Title"] = "StarBuilder";
+                    g2["SystemSupport"] = "Windows";
+                    g2["AgeRating"] = "T";
+                    g2["Description"] = "Build Your Own Galaxy";
+                    g2["ReleaseDate"] = DateTime.Parse("2010-07-22");
+                    g2["Price"] = 59.49;
+                    g2["Achievements"] = 145;
+                    table.Rows.Add(g2);
+
+                    DataRow g3 = table.NewRow();
+                    g3["DeveloperID"] = 1;
+                    g3["PublisherID"] = 3;
+                    g3["Title"] = "StarBuilder Lite";
+                    g3["SystemSupport"] = "Windows";
+                    g3["AgeRating"] = "E";
+                    g3["Description"] = "Keep you sane";
+                    g3["ReleaseDate"] = DateTime.Parse("1998-06-02");
+                    g3["Price"] = 0;
+                    g3["Achievements"] = 5;
+                    table.Rows.Add(g3);
+
+                    DataRow g4 = table.NewRow();
+                    g4["DeveloperID"] = 4;
+                    g4["PublisherID"] = 4;
+                    g4["Title"] = "PokemonTCG";
+                    g4["SystemSupport"] = "Windows";
+                    g4["AgeRating"] = "R";
+                    g4["Description"] = "A Game";
+                    g4["ReleaseDate"] = DateTime.Parse("2001-11-09");
+                    g4["Price"] = 999.99;
+                    g4["Achievements"] = 2000;
+                    table.Rows.Add(g4);
+                });
+                Console.WriteLine("Games Successfully Created.");
+                gamesCreated = true;
             }
-            Console.WriteLine("Games Successfully Created.");
-            gamesCreated = true;
         }
-
-        public static void CreateLibraries() {
-            if (!gamesCreated){
-                Console.WriteLine("Games not yet created. Creating Games...");
-                CreateGames();
-            }
-
-            string query = "SELECT * FROM Library";
-            try {
-                MySqlConnection conn = new MySqlConnection(Program.connStr);
-                DataSet ds = new DataSet();
-
-                conn.Open();
-                MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
-                adapter.Fill(ds, "Library");
-                conn.Close();
-
-                DataTable table = ds.Tables["Library"];
-
-                DataRow newRow1 = table.NewRow();
-                newRow1["LibraryID"] = "01";
-                newRow1["GameID"] = "01";
-                newRow1["PurchaseDate"] = "6/9/2009";
-                newRow1["HoursPlayed"] = "995.7";
-                table.Rows.Add(newRow1);
-                DataRow newRow2 = table.NewRow();
-                newRow1["LibraryID"] = "02";
-                newRow1["GameID"] = "02";
-                newRow1["PurchaseDate"] = "1/12/2025";
-                newRow1["HoursPlayed"] = "412.3";
-                table.Rows.Add(newRow2);
-                DataRow newRow3 = table.NewRow();
-                newRow1["LibraryID"] = "03";
-                newRow1["GameID"] = "03";
-                newRow1["PurchaseDate"] = "5/9/2025";
-                newRow1["HoursPlayed"] = "243";
-                table.Rows.Add(newRow3);
-
-                using (MySqlConnection conn2 = new MySqlConnection(Program.connStr)) {
-                    conn2.Open();
-
-                    MySqlDataAdapter adapter2 = new MySqlDataAdapter(query, conn2);
-                    MySqlCommandBuilder builder = new MySqlCommandBuilder(adapter2);
-
-                    adapter2.Update(ds, "Library");
+        public static void CreateGameGenres() {
+            if (gameGenresCreated){
+                Console.WriteLine("GameGenres already created.");
+            } else if (!DbHelper.EnsureTableExists("GameGenre")) {
+                Console.WriteLine("GameGenres table not found, create table first.");
+            } else {
+                if (!gamesCreated) {
+                    Console.WriteLine("Games not yet created. Creating Games...");
+                    CreateGames();
                 }
-            } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
+                if (!genresCreated) {
+                    Console.WriteLine("Genres not yet created. Creating Genres...");
+                    CreateGenres();
+                }
+
+                DbHelper.InsertRows("GameGenre", table => {
+                    DataRow gg1 = table.NewRow();
+                    gg1["GameID"] = 1;
+                    gg1["GenreID"] = 7;
+                    table.Rows.Add(gg1);
+
+                    DataRow gg2 = table.NewRow();
+                    gg2["GameID"] = 1;
+                    gg2["GenreID"] = 2;
+                    table.Rows.Add(gg2);
+
+                    DataRow gg3 = table.NewRow();
+                    gg3["GameID"] = 2;
+                    gg3["GenreID"] = 5;
+                    table.Rows.Add(gg3);
+
+                    DataRow gg4 = table.NewRow();
+                    gg4["GameID"] = 3;
+                    gg4["GenreID"] = 3;
+                    table.Rows.Add(gg4);
+
+                    DataRow gg5 = table.NewRow();
+                    gg5["GameID"] = 3;
+                    gg5["GenreID"] = 6;
+                    table.Rows.Add(gg5);
+
+                    DataRow gg6 = table.NewRow();
+                    gg6["GameID"] = 4;
+                    gg6["GenreID"] = 8;
+                    table.Rows.Add(gg6);
+                });
+                Console.WriteLine("Game-Genre relations successfully created.");
+                gameGenresCreated = true;
             }
-            Console.WriteLine("Libraries Successfully Created.");
-            librariesCreated = true;
         }
 
         public static void CreateUsers() {
-            if (!librariesCreated){
-                Console.WriteLine("Libraries not yet created. Creating Libraries...");
-                CreateLibraries();
+            if (usersCreated){
+                Console.WriteLine("Users already created.");
+            } else if (!DbHelper.EnsureTableExists("SteamUser")) {
+                Console.WriteLine("Users table not found, create table first.");
+            } else {
+
+                DbHelper.InsertRows("SteamUser", table => {
+                    DataRow u1 = table.NewRow();
+                    u1["Name"] = "Terry";
+                    u1["Email"] = "terryman@gmail.com";
+                    u1["Address"] = "123 That Street";
+                    u1["DateCreated"] = DateTime.Parse("2007-01-01");
+                    u1["DateOfBirth"] = DateTime.Parse("1832-08-23");
+                    u1["AccountBalance"] = 85.97;
+                    table.Rows.Add(u1);
+
+                    DataRow u2 = table.NewRow();
+                    u2["Name"] = "Lina";
+                    u2["Email"] = "lindaloo@fastmail.com";
+                    u2["Address"] = "77 Forest Lane";
+                    u2["DateCreated"] = DateTime.Parse("2012-03-14");
+                    u2["DateOfBirth"] = DateTime.Parse("1979-11-05");
+                    u2["AccountBalance"] = 12.40;
+                    table.Rows.Add(u2);
+
+                    DataRow u3 = table.NewRow();
+                    u3["Name"] = "Marcus";
+                    u3["Email"] = "marcusg@yahoo.com";
+                    u3["Address"] = "904 Sunset Road";
+                    u3["DateCreated"] = DateTime.Parse("2020-09-30");
+                    u3["DateOfBirth"] = DateTime.Parse("1995-04-18");
+                    u3["AccountBalance"] = 203.11;
+                    table.Rows.Add(u3);
+                });
+                Console.WriteLine("Users Successfully Created.");
+                usersCreated = true;
             }
-
-            string query = "SELECT * FROM SteamUser";
-            try {
-                MySqlConnection conn = new MySqlConnection(Program.connStr);
-                DataSet ds = new DataSet();
-
-                conn.Open();
-                MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
-                adapter.Fill(ds, "SteamUser");
-                conn.Close();
-
-                DataTable table = ds.Tables["SteamUser"];
-                
-                DataRow newRow1 = table.NewRow();
-                newRow1["UserID"] = "01";
-                newRow1["Name"] = "Terry";
-                newRow1["Email"] = "terryman@gmailcom";
-                newRow1["Address"] = "123 That Street";
-                newRow1["DateCreated"] = "1/1/2007";
-                newRow1["DateOfBirth"] = "23/8/1832";
-                newRow1["AccountBalance"] = "85.97";
-                newRow1["LibraryID"] = "01";
-                table.Rows.Add(newRow1);
-                DataRow newRow2 = table.NewRow();
-                newRow2["UserID"] = "02";
-                newRow2["Name"] = "Lina";
-                newRow2["Email"] = "lindaloo@fastmail.com";
-                newRow2["Address"] = "77 Forest lane";
-                newRow2["DateCreated"] = "14/3/2012";
-                newRow2["DateOfBirth"] = "11/5/1979";
-                newRow2["AccountBalance"] = "12.40";
-                newRow2["LibraryID"] = "02";
-                table.Rows.Add(newRow2);
-                DataRow newRow3 = table.NewRow();
-                newRow3["UserID"] = "03";
-                newRow3["Name"] = "Marcus";
-                newRow3["Email"] = "marcusg@yahoo.com";
-                newRow3["Address"] = "904 Sunset Road";
-                newRow3["DateCreated"] = "30/9/2020";
-                newRow3["DateOfBirth"] = "18/4/1995";
-                newRow3["AccountBalance"] = "203.11";
-                newRow3["LibraryID"] = "03";
-                table.Rows.Add(newRow3);
-
-                using (MySqlConnection conn2 = new MySqlConnection(Program.connStr)) {
-                    conn2.Open();
-
-                    MySqlDataAdapter adapter2 = new MySqlDataAdapter(query, conn2);
-                    MySqlCommandBuilder builder = new MySqlCommandBuilder(adapter2);
-
-                    adapter2.Update(ds, "SteamUser");
+        }
+        public static void CreateGameLibrary() {
+            if (gameLibraryCreated){
+                Console.WriteLine("GameLibrary already created.");
+            } else if (!DbHelper.EnsureTableExists("GameLibrary")) {
+                Console.WriteLine("GameLibrary table not found, create table first.");
+            } else {
+                if (!usersCreated){
+                    Console.WriteLine("Users not yet created. Creating Users...");
+                    CreateUsers();
                 }
-            } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
+                if (!gamesCreated){
+                    Console.WriteLine("Games not yet created. Creating Games...");
+                    CreateGames();
+                }
+
+                DbHelper.InsertRows("GameLibrary", table => {
+                    DataRow r1 = table.NewRow();
+                    r1["UserID"] = 1;
+                    r1["GameID"] = 1;
+                    r1["PurchaseDate"] = DateTime.Parse("2009-06-09");
+                    r1["HoursPlayed"] = 995.7;
+                    table.Rows.Add(r1);
+
+                    DataRow r2 = table.NewRow();
+                    r2["UserID"] = 1;
+                    r2["GameID"] = 2;
+                    r2["PurchaseDate"] = DateTime.Parse("2010-01-12");
+                    r2["HoursPlayed"] = 120.0;
+                    table.Rows.Add(r2);
+
+                    DataRow r3 = table.NewRow();
+                    r3["UserID"] = 2;
+                    r3["GameID"] = 3;
+                    r3["PurchaseDate"] = DateTime.Parse("2015-09-05");
+                    r3["HoursPlayed"] = 243;
+                    table.Rows.Add(r3);
+                });
+                Console.WriteLine("GameLibrary Successfully Created.");
+                gameLibraryCreated = true;
             }
-            Console.WriteLine("Users Successfully Created.");
-            usersCreated = true;
         }
     }
 }

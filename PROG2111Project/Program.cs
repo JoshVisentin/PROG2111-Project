@@ -25,13 +25,15 @@ namespace PROG2111Project {
         private static void Main(string[] args){
             bool running = true;
 
-            //opulate the defalt davlues
+            Creation.InitializeCreatedFlags();
 
             while (running){
                 Console.WriteLine("1. Create");
                 Console.WriteLine("2. Read");
                 Console.WriteLine("3. Update");
                 Console.WriteLine("4. Delete");
+                Console.WriteLine("5. Drop All Tables");
+                Console.WriteLine("6. Create All Tables");
                 Console.WriteLine("0. Exit");
                 Console.Write("Choose an option: ");
 
@@ -50,6 +52,12 @@ namespace PROG2111Project {
                         break;
                     case "4":
                         Delete();
+                        break;
+                    case "5":
+                        DbHelper.DropAllTables();
+                        break;
+                    case "6":
+                        DbHelper.CreateAllTables();
                         break;
                     case "0":
                         running = false;
@@ -98,13 +106,48 @@ namespace PROG2111Project {
             }
         }
         public static void Read(){
+            string[] tables = {"Publisher", "Developer", "Genre", "Game", "Library", "SteamUser"};
+
+            Console.WriteLine("1. Publishers");
+            Console.WriteLine("2. Developers");
+            Console.WriteLine("3. Genres");
+            Console.WriteLine("4. Games");
+            Console.WriteLine("5. Libraries");
+            Console.WriteLine("6. Users");
+            Console.WriteLine("7. Custom Query");
+            Console.Write("Choose: ");
+
             string input = Console.ReadLine();
-            Console.WriteLine();
 
-            switch (input){
-                case "1":
-                    break;
+            if (int.TryParse(input, out int choice)){
+                if (choice == 7) RunCustomQuery();
+                if (choice >= 1 && choice <= tables.Length){
+                    string table = tables[choice - 1];
+                    Console.WriteLine("You chose table: " + table);
 
+                    string query = $"SELECT * FROM {table}";
+                    DataSet ds = new DataSet();
+
+                    try {
+                        using MySqlConnection conn = new MySqlConnection(connStr);
+                        conn.Open();
+
+                        MySqlDataAdapter da = new MySqlDataAdapter(query, conn);
+                        da.Fill(ds, table);
+
+                        DataTable dt = ds.Tables[table];
+
+                        foreach (DataRow row in dt.Rows) {
+                            foreach (DataColumn col in dt.Columns)
+                                Console.Write($"{row[col]} \t");
+                            Console.WriteLine();
+                        }
+                    } catch (Exception ex) {
+                        Console.WriteLine("Error reading: " + ex.Message);
+                    }
+                }
+            } else {
+                Console.WriteLine("Invalid choice.");
             }
         }
         public static void Update(){ 
@@ -114,6 +157,36 @@ namespace PROG2111Project {
         
         }
 
-    
+        public static void RunCustomQuery(){
+            Console.Write("Enter a SELECT query: ");
+            string query = Console.ReadLine();
+
+            if (!query.TrimStart().StartsWith("SELECT", StringComparison.OrdinalIgnoreCase)){
+                Console.WriteLine("Only SELECT statements are allowed.");
+                return;
+            }
+
+            try {
+                using MySqlConnection conn = new MySqlConnection(connStr);
+                conn.Open();
+
+                MySqlDataAdapter da = new MySqlDataAdapter(query, conn);
+                DataSet ds = new DataSet();
+                da.Fill(ds);
+
+                if (ds.Tables.Count == 0){
+                    Console.WriteLine("Query returned no results.");
+                    return;
+                }
+                DataTable table = ds.Tables[0];
+
+                foreach (DataRow row in table.Rows){
+                    foreach (DataColumn col in table.Columns) Console.Write($"{row[col]}\t");
+                    Console.WriteLine();
+                }
+            } catch (Exception ex){
+                Console.WriteLine("Query failed: " + ex.Message);
+            }
+        }
     }
 }
