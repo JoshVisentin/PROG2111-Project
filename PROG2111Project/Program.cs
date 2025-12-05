@@ -11,17 +11,10 @@
 • Use the ADO.NET MySQL library to establish the connection and perform operations. 
  */
 using MySql.Data.MySqlClient;
-using System.Text;
-using System;
 using System.Data;
-using System.Collections.Generic;
-using MySqlX.XDevAPI.CRUD;
 
 namespace PROG2111Project {
     internal class Program{
-        public const string connStr = "server=localhost;user=testuser;password=Password;database=steamdb;";
-        public static MySqlConnection connection = new MySqlConnection(connStr);
-        public static DataSet ds = new DataSet();
         private static void Main(string[] args){
             bool running = true;
 
@@ -76,9 +69,10 @@ namespace PROG2111Project {
             Console.WriteLine("2. Create all Developers.");
             Console.WriteLine("3. Create all Genres.");
             Console.WriteLine("4. Create all Games.");
-            Console.WriteLine("5. Create all Libraries.");
-            Console.WriteLine("6. Create all Users");
-            Console.WriteLine("0. Exit");
+            Console.WriteLine("5. Create Game-Genre Relations.");
+            Console.WriteLine("6. Create all Users.");
+            Console.WriteLine("7. Create Game-Library Relations.");
+            Console.WriteLine("0. Back");
             Console.Write("Choose an option: ");
 
             string input = Console.ReadLine();
@@ -98,29 +92,39 @@ namespace PROG2111Project {
                     Creation.CreateGames();
                     break;
                 case "5":
-                    Creation.CreateLibraries();
+                    Creation.CreateGameGenres();
                     break;
                 case "6":
                     Creation.CreateUsers();
+                    break;
+                case "7":
+                    Creation.CreateGameLibrary();
+                    break;
+                case "0":
+                    return;
+                default:
+                    Console.WriteLine("Invalid selection.");
                     break;
             }
         }
         public static void Read(){
             string[] tables = {"Publisher", "Developer", "Genre", "Game", "Library", "SteamUser"};
 
-            Console.WriteLine("1. Publishers");
-            Console.WriteLine("2. Developers");
-            Console.WriteLine("3. Genres");
-            Console.WriteLine("4. Games");
-            Console.WriteLine("5. Libraries");
-            Console.WriteLine("6. Users");
-            Console.WriteLine("7. Custom Query");
+            Console.WriteLine("1. Show Publishers");
+            Console.WriteLine("2. Show Developers");
+            Console.WriteLine("3. Show Genres");
+            Console.WriteLine("4. Show Games");
+            Console.WriteLine("5. Show Libraries");
+            Console.WriteLine("6. Show Users");
+            Console.WriteLine("7. Show Custom Query");
+            Console.WriteLine("0. Back");
             Console.Write("Choose: ");
 
             string input = Console.ReadLine();
 
             if (int.TryParse(input, out int choice)){
-                if (choice == 7) RunCustomQuery();
+                if (choice == 0) return;
+                if (choice == 7) DbHelper.RunCustomQuery();
                 if (choice >= 1 && choice <= tables.Length){
                     string table = tables[choice - 1];
                     Console.WriteLine("You chose table: " + table);
@@ -129,7 +133,7 @@ namespace PROG2111Project {
                     DataSet ds = new DataSet();
 
                     try {
-                        using MySqlConnection conn = new MySqlConnection(connStr);
+                        using MySqlConnection conn = new MySqlConnection(DbHelper.connStr);
                         conn.Open();
 
                         MySqlDataAdapter da = new MySqlDataAdapter(query, conn);
@@ -137,11 +141,7 @@ namespace PROG2111Project {
 
                         DataTable dt = ds.Tables[table];
 
-                        foreach (DataRow row in dt.Rows) {
-                            foreach (DataColumn col in dt.Columns)
-                                Console.Write($"{row[col]} \t");
-                            Console.WriteLine();
-                        }
+                        PrintTable(dt);
                     } catch (Exception ex) {
                         Console.WriteLine("Error reading: " + ex.Message);
                     }
@@ -154,38 +154,61 @@ namespace PROG2111Project {
         
         }
         public static void Delete(){ 
-        
+            Console.WriteLine("Delete Menu:");
+            Console.WriteLine("1. Delete Developer");
+            Console.WriteLine("2. Delete Publisher");
+            Console.WriteLine("3. Delete Genre");
+            Console.WriteLine("4. Delete Game");
+            Console.WriteLine("5. Delete User");
+            Console.WriteLine("6. Delete Game-Genre relation");
+            Console.WriteLine("7. Delete Game-Library relation");
+            Console.WriteLine("0. Back");
+
+            Console.Write("Choose an option: ");
+            string choice = Console.ReadLine();
+            Console.WriteLine();
+
+            switch (choice) {
+                case "1": 
+                    Deletion.DeleteDeveloper(); 
+                    break;
+                case "2": 
+                    Deletion.DeletePublisher(); 
+                    break;
+                case "3": 
+                    Deletion.DeleteGenre(); 
+                    break;
+                case "4": 
+                    Deletion.DeleteGame(); 
+                    break;
+                case "5": 
+                    Deletion.DeleteUser(); 
+                    break;
+                case "6": 
+                    Deletion.DeleteGameGenreRelation(); 
+                    break;
+                case "7": 
+                    Deletion.DeleteGameLibraryRelation(); 
+                    break;
+                case "0": 
+                    return;
+                default: 
+                    Console.WriteLine("Invalid choice"); 
+                    break;
+            }
         }
 
-        public static void RunCustomQuery(){
-            Console.Write("Enter a SELECT query: ");
-            string query = Console.ReadLine();
-
-            if (!query.TrimStart().StartsWith("SELECT", StringComparison.OrdinalIgnoreCase)){
-                Console.WriteLine("Only SELECT statements are allowed.");
-                return;
+        public static void PrintTable(DataTable table) {
+            foreach (DataColumn col in table.Columns) {
+                Console.Write($"{col.ColumnName,-20}");
             }
+            Console.WriteLine();
 
-            try {
-                using MySqlConnection conn = new MySqlConnection(connStr);
-                conn.Open();
-
-                MySqlDataAdapter da = new MySqlDataAdapter(query, conn);
-                DataSet ds = new DataSet();
-                da.Fill(ds);
-
-                if (ds.Tables.Count == 0){
-                    Console.WriteLine("Query returned no results.");
-                    return;
+            foreach (DataRow row in table.Rows) {
+                foreach (var item in row.ItemArray) {
+                    Console.Write($"{item,-20}");
                 }
-                DataTable table = ds.Tables[0];
-
-                foreach (DataRow row in table.Rows){
-                    foreach (DataColumn col in table.Columns) Console.Write($"{row[col]}\t");
-                    Console.WriteLine();
-                }
-            } catch (Exception ex){
-                Console.WriteLine("Query failed: " + ex.Message);
+                Console.WriteLine();
             }
         }
     }

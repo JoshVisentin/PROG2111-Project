@@ -1,5 +1,4 @@
-﻿using MySql.Data.MySqlClient;
-using System.Data;
+﻿using System.Data;
 
 namespace PROG2111Project {
     internal class Creation {
@@ -131,12 +130,12 @@ namespace PROG2111Project {
                     table.Rows.Add(g1);
 
                     DataRow g2 = table.NewRow();
-                    g2["DeveloperID"] = 3;
-                    g2["PublisherID"] = 3;
+                    g2["DeveloperID"] = 2;
+                    g2["PublisherID"] = 2;
                     g2["Title"] = "StarBuilder";
                     g2["SystemSupport"] = "Windows";
                     g2["AgeRating"] = "T";
-                    g2["Description"] = "Build Your Own Galaxy";
+                    g2["Description"] = "Build Your Galaxy";
                     g2["ReleaseDate"] = DateTime.Parse("2010-07-22");
                     g2["Price"] = 59.49;
                     g2["Achievements"] = 145;
@@ -144,7 +143,7 @@ namespace PROG2111Project {
 
                     DataRow g3 = table.NewRow();
                     g3["DeveloperID"] = 1;
-                    g3["PublisherID"] = 3;
+                    g3["PublisherID"] = 2;
                     g3["Title"] = "StarBuilder Lite";
                     g3["SystemSupport"] = "Windows";
                     g3["AgeRating"] = "E";
@@ -155,8 +154,8 @@ namespace PROG2111Project {
                     table.Rows.Add(g3);
 
                     DataRow g4 = table.NewRow();
-                    g4["DeveloperID"] = 4;
-                    g4["PublisherID"] = 4;
+                    g4["DeveloperID"] = 3;
+                    g4["PublisherID"] = 3;
                     g4["Title"] = "PokemonTCG";
                     g4["SystemSupport"] = "Windows";
                     g4["AgeRating"] = "R";

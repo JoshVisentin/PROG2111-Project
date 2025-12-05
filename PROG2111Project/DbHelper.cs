@@ -3,11 +3,42 @@ using System.Data;
 
 namespace PROG2111Project {
     internal class DbHelper {
+        public const string connStr = "server=localhost;user=testuser;password=Password;database=steamdb;";
+        public static void RunCustomQuery(){
+            Console.Write("Enter a SELECT query: ");
+            string query = Console.ReadLine();
+
+            if (!query.TrimStart().StartsWith("SELECT", StringComparison.OrdinalIgnoreCase)){
+                Console.WriteLine("Only SELECT statements are allowed.");
+            } else {
+                try {
+                    using MySqlConnection conn = new MySqlConnection(connStr);
+                    conn.Open();
+
+                    MySqlDataAdapter da = new MySqlDataAdapter(query, conn);
+                    DataSet ds = new DataSet();
+                    da.Fill(ds);
+
+                    if(ds.Tables.Count == 0) {
+                        Console.WriteLine("Query returned no results.");
+                        return;
+                    }
+                    DataTable table = ds.Tables[0];
+
+                    foreach(DataRow row in table.Rows) {
+                        foreach(DataColumn col in table.Columns) Console.Write($"{row[col]}\t");
+                        Console.WriteLine();
+                    }
+                } catch(Exception ex) {
+                    Console.WriteLine("Query failed: " + ex.Message);
+                }
+            }    
+        }
         public static void InsertRows(string tableName, Action<DataTable> fillRows) {
             string query = $"SELECT * FROM {tableName}";
 
             try {
-                using MySqlConnection conn = new MySqlConnection(Program.connStr);
+                using MySqlConnection conn = new MySqlConnection(connStr);
                 DataSet ds = new DataSet();
                 conn.Open();
 
@@ -19,7 +50,7 @@ namespace PROG2111Project {
 
                 fillRows(table);
 
-                using MySqlConnection conn2 = new MySqlConnection(Program.connStr);
+                using MySqlConnection conn2 = new MySqlConnection(connStr);
                 conn2.Open();
 
                 MySqlDataAdapter da2 = new MySqlDataAdapter(query, conn2);
@@ -44,7 +75,7 @@ namespace PROG2111Project {
                              WHERE table_schema = DATABASE() AND table_name = @name";
 
             try {
-                using MySqlConnection conn = new MySqlConnection(Program.connStr);
+                using MySqlConnection conn = new MySqlConnection(connStr);
                 conn.Open();
 
                 using MySqlCommand cmd = new MySqlCommand(query, conn);
@@ -62,7 +93,7 @@ namespace PROG2111Project {
             string query = $"SELECT COUNT(*) FROM {tableName}";
 
             try {
-                using MySqlConnection conn = new MySqlConnection(Program.connStr);
+                using MySqlConnection conn = new MySqlConnection(connStr);
                 conn.Open();
 
                 using MySqlCommand cmd = new MySqlCommand(query, conn);
@@ -82,7 +113,7 @@ namespace PROG2111Project {
             if (!anyExists){
                 Console.WriteLine("No tables exist. Nothing to drop.");
             } else {
-                using MySqlConnection conn = new MySqlConnection(Program.connStr);
+                using MySqlConnection conn = new MySqlConnection(connStr);
                 conn.Open();
 
                 foreach (string table in dropOrder){
@@ -98,6 +129,7 @@ namespace PROG2111Project {
                         }
                     }
                 }
+                Creation.InitializeCreatedFlags();
                 Console.WriteLine("All existing tables dropped."); 
             }
         }
@@ -166,7 +198,7 @@ namespace PROG2111Project {
                 );";
 
             try {
-                using MySqlConnection conn = new MySqlConnection(Program.connStr);
+                using MySqlConnection conn = new MySqlConnection(connStr);
                 conn.Open();
 
                 string[] commands = sql.Split(";", StringSplitOptions.RemoveEmptyEntries);
@@ -181,6 +213,33 @@ namespace PROG2111Project {
             } catch (Exception ex) {
                 Console.WriteLine("Table creation failed: " + ex.Message);
             }
+        }
+
+        public static bool RowExists(string table, string keyColumn, int id) {
+            string sql = $"SELECT COUNT(*) FROM {table} WHERE {keyColumn} = @id";
+            using MySqlConnection conn = new MySqlConnection(connStr);
+            conn.Open();
+            using MySqlCommand cmd = new MySqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                return (long)cmd.ExecuteScalar() > 0;
+        }
+
+        public static bool HasDependencies(string table, string fkColumn, int id) {
+            string sql = $"SELECT COUNT(*) FROM {table} WHERE {fkColumn} = @id";
+            using MySqlConnection conn = new MySqlConnection(connStr);
+            conn.Open();
+            using MySqlCommand cmd = new MySqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                return (long)cmd.ExecuteScalar() > 0;
+        }
+
+        public static void DeleteRow(string table, string keyColumn, int id) {
+            string sql = $"DELETE FROM {table} WHERE {keyColumn} = @id";
+            using MySqlConnection conn = new MySqlConnection(connStr);
+            conn.Open();
+            using MySqlCommand cmd = new MySqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
         }
     }
 }
