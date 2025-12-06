@@ -1,7 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 
 namespace PROG2111Project {
-    internal class Deletion {
+    internal class DataDeleter {
         public static void DeleteDeveloper() {
             Console.Write("Enter DeveloperID to delete: ");
             if (!int.TryParse(Console.ReadLine(), out int id)) {
@@ -163,9 +163,5 @@ namespace PROG2111Project {
             else
                 Console.WriteLine("Relation not found.");
         }
-
-
-
-
     }
 }

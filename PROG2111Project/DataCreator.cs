@@ -1,7 +1,7 @@
 ﻿using System.Data;
 
 namespace PROG2111Project {
-    internal class Creation {
+    internal class DataCreator {
         private static bool publishersCreated = false;
         private static bool developersCreated = false;
         private static bool genresCreated = false;
@@ -61,14 +61,19 @@ namespace PROG2111Project {
                     table.Rows.Add(r1);
 
                     DataRow r2 = table.NewRow();
-                    r2["Name"] = "LindaSoft";
-                    r2["Website"] = "lindasoft.dev";
+                    r2["Name"] = "Buster";
+                    r2["Website"] = "bust.org";
                     table.Rows.Add(r2);
-
+                    
                     DataRow r3 = table.NewRow();
-                    r3["Name"] = "Pokemon Company";
-                    r3["Website"] = "pokemon.com";
+                    r3["Name"] = "LTech";
+                    r3["Website"] = "ltech.org";
                     table.Rows.Add(r3);
+
+                    DataRow r4 = table.NewRow();
+                    r4["Name"] = "Pokemon Company";
+                    r4["Website"] = "pokemon.com";
+                    table.Rows.Add(r4);
                 });
 
                 Console.WriteLine("Publishers Successfully Created.");
@@ -86,9 +91,7 @@ namespace PROG2111Project {
                 DbHelper.InsertRows("Genre", table => {
                     string[] genreNames = {
                         "DatingSim", "Horror", "Grand Strategy",
-                        "Romance", "SciFi", "FarmingSim",
-                        "Idle", "RPG"
-                    };
+                        "Romance", "SciFi", "FarmingSim", "Idle", "RPG"};
 
                     foreach (string g in genreNames){
                         DataRow row = table.NewRow();
@@ -118,8 +121,6 @@ namespace PROG2111Project {
             
                 DbHelper.InsertRows("Game", table => {
                     DataRow g1 = table.NewRow();
-                    g1["DeveloperID"] = 1;
-                    g1["PublisherID"] = 1;
                     g1["Title"] = "CookieClicker";
                     g1["SystemSupport"] = "Mac";
                     g1["AgeRating"] = "M";
@@ -127,11 +128,11 @@ namespace PROG2111Project {
                     g1["ReleaseDate"] = DateTime.Parse("2001-11-09");
                     g1["Price"] = 999.99;
                     g1["Achievements"] = 200;
+                    g1["DeveloperID"] = 1;
+                    g1["PublisherID"] = 1;
                     table.Rows.Add(g1);
 
                     DataRow g2 = table.NewRow();
-                    g2["DeveloperID"] = 2;
-                    g2["PublisherID"] = 2;
                     g2["Title"] = "StarBuilder";
                     g2["SystemSupport"] = "Windows";
                     g2["AgeRating"] = "T";
@@ -139,30 +140,32 @@ namespace PROG2111Project {
                     g2["ReleaseDate"] = DateTime.Parse("2010-07-22");
                     g2["Price"] = 59.49;
                     g2["Achievements"] = 145;
+                    g2["DeveloperID"] = 3;
+                    g2["PublisherID"] = 2;
                     table.Rows.Add(g2);
 
                     DataRow g3 = table.NewRow();
-                    g3["DeveloperID"] = 1;
-                    g3["PublisherID"] = 2;
-                    g3["Title"] = "StarBuilder Lite";
+                    g3["Title"] = "BongoCat";
                     g3["SystemSupport"] = "Windows";
                     g3["AgeRating"] = "E";
                     g3["Description"] = "Keep you sane";
-                    g3["ReleaseDate"] = DateTime.Parse("1998-06-02");
+                    g3["ReleaseDate"] = DateTime.Parse("2002-04-82");
                     g3["Price"] = 0;
                     g3["Achievements"] = 5;
+                    g3["DeveloperID"] = 1;
+                    g3["PublisherID"] = 2;
                     table.Rows.Add(g3);
 
                     DataRow g4 = table.NewRow();
-                    g4["DeveloperID"] = 3;
-                    g4["PublisherID"] = 3;
                     g4["Title"] = "PokemonTCG";
                     g4["SystemSupport"] = "Windows";
                     g4["AgeRating"] = "R";
-                    g4["Description"] = "A Game";
-                    g4["ReleaseDate"] = DateTime.Parse("2001-11-09");
-                    g4["Price"] = 999.99;
-                    g4["Achievements"] = 2000;
+                    g4["Description"] = "Sell us your soul";
+                    g4["ReleaseDate"] = DateTime.Parse("1998-06-02");
+                    g4["Price"] = 0;
+                    g4["Achievements"] = 18223;
+                    g4["DeveloperID"] = 4;
+                    g4["PublisherID"] = 3;
                     table.Rows.Add(g4);
                 });
                 Console.WriteLine("Games Successfully Created.");
@@ -187,7 +190,7 @@ namespace PROG2111Project {
                 DbHelper.InsertRows("GameGenre", table => {
                     DataRow gg1 = table.NewRow();
                     gg1["GameID"] = 1;
-                    gg1["GenreID"] = 7;
+                    gg1["GenreID"] = 1;
                     table.Rows.Add(gg1);
 
                     DataRow gg2 = table.NewRow();
@@ -196,24 +199,34 @@ namespace PROG2111Project {
                     table.Rows.Add(gg2);
 
                     DataRow gg3 = table.NewRow();
-                    gg3["GameID"] = 2;
-                    gg3["GenreID"] = 5;
+                    gg3["GameID"] = 1;
+                    gg3["GenreID"] = 3;
                     table.Rows.Add(gg3);
 
                     DataRow gg4 = table.NewRow();
-                    gg4["GameID"] = 3;
-                    gg4["GenreID"] = 3;
+                    gg4["GameID"] = 2;
+                    gg4["GenreID"] = 4;
                     table.Rows.Add(gg4);
 
                     DataRow gg5 = table.NewRow();
-                    gg5["GameID"] = 3;
-                    gg5["GenreID"] = 6;
+                    gg5["GameID"] = 2;
+                    gg5["GenreID"] = 5;
                     table.Rows.Add(gg5);
 
                     DataRow gg6 = table.NewRow();
-                    gg6["GameID"] = 4;
-                    gg6["GenreID"] = 8;
+                    gg6["GameID"] = 2;
+                    gg6["GenreID"] = 6;
                     table.Rows.Add(gg6);
+
+                    DataRow gg7 = table.NewRow();
+                    gg7["GameID"] = 3;
+                    gg7["GenreID"] = 7;
+                    table.Rows.Add(gg7);
+
+                    DataRow gg8 = table.NewRow();
+                    gg8["GameID"] = 4;
+                    gg8["GenreID"] = 8;
+                    table.Rows.Add(gg8);
                 });
                 Console.WriteLine("Game-Genre relations successfully created.");
                 gameGenresCreated = true;
@@ -283,18 +296,25 @@ namespace PROG2111Project {
                     table.Rows.Add(r1);
 
                     DataRow r2 = table.NewRow();
-                    r2["UserID"] = 1;
+                    r2["UserID"] = 2;
                     r2["GameID"] = 2;
                     r2["PurchaseDate"] = DateTime.Parse("2010-01-12");
                     r2["HoursPlayed"] = 120.0;
                     table.Rows.Add(r2);
 
                     DataRow r3 = table.NewRow();
-                    r3["UserID"] = 2;
+                    r3["UserID"] = 3;
                     r3["GameID"] = 3;
                     r3["PurchaseDate"] = DateTime.Parse("2015-09-05");
                     r3["HoursPlayed"] = 243;
                     table.Rows.Add(r3);
+
+                    DataRow r4 = table.NewRow();
+                    r4["UserID"] = 3;
+                    r4["GameID"] = 3;
+                    r4["PurchaseDate"] = DateTime.Parse("2019-05-14");
+                    r4["HoursPlayed"] = 63539.99;
+                    table.Rows.Add(r4);
                 });
                 Console.WriteLine("GameLibrary Successfully Created.");
                 gameLibraryCreated = true;

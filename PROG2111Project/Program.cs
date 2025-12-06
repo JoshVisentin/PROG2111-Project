@@ -18,7 +18,7 @@ namespace PROG2111Project {
         private static void Main(string[] args){
             bool running = true;
 
-            Creation.InitializeCreatedFlags();
+            DataCreator.InitializeCreatedFlags();
 
             while (running){
                 Console.WriteLine("1. Create");
@@ -80,25 +80,25 @@ namespace PROG2111Project {
 
             switch (input){
                 case "1":
-                    Creation.CreatePublishers();
+                    DataCreator.CreatePublishers();
                     break;
                 case "2":
-                    Creation.CreateDevelopers();
+                    DataCreator.CreateDevelopers();
                     break;
                 case "3":
-                    Creation.CreateGenres();
+                    DataCreator.CreateGenres();
                     break;
                 case "4":
-                    Creation.CreateGames();
+                    DataCreator.CreateGames();
                     break;
                 case "5":
-                    Creation.CreateGameGenres();
+                    DataCreator.CreateGameGenres();
                     break;
                 case "6":
-                    Creation.CreateUsers();
+                    DataCreator.CreateUsers();
                     break;
                 case "7":
-                    Creation.CreateGameLibrary();
+                    DataCreator.CreateGameLibrary();
                     break;
                 case "0":
                     return;
@@ -107,14 +107,14 @@ namespace PROG2111Project {
                     break;
             }
         }
-        public static void Read(){
-            string[] tables = {"Publisher", "Developer", "Genre", "Game", "Library", "SteamUser"};
+        public static void Read() {
+            string[] tables = { "Publisher", "Developer", "Genre", "Game", "GameLibrary", "SteamUser" };
 
             Console.WriteLine("1. Show Publishers");
             Console.WriteLine("2. Show Developers");
             Console.WriteLine("3. Show Genres");
             Console.WriteLine("4. Show Games");
-            Console.WriteLine("5. Show Libraries");
+            Console.WriteLine("5. Show Game Libraries");
             Console.WriteLine("6. Show Users");
             Console.WriteLine("7. Show Custom Query");
             Console.WriteLine("0. Back");
@@ -122,10 +122,15 @@ namespace PROG2111Project {
 
             string input = Console.ReadLine();
 
-            if (int.TryParse(input, out int choice)){
+            if (int.TryParse(input, out int choice)) {
+
                 if (choice == 0) return;
-                if (choice == 7) DbHelper.RunCustomQuery();
-                if (choice >= 1 && choice <= tables.Length){
+                if (choice == 7) {
+                    DbHelper.RunCustomQuery();
+                    return;
+                }
+
+                if (choice >= 1 && choice <= tables.Length) {
                     string table = tables[choice - 1];
                     Console.WriteLine("You chose table: " + table);
 
@@ -142,16 +147,58 @@ namespace PROG2111Project {
                         DataTable dt = ds.Tables[table];
 
                         PrintTable(dt);
-                    } catch (Exception ex) {
+                    }
+                    catch (Exception ex) {
                         Console.WriteLine("Error reading: " + ex.Message);
                     }
                 }
-            } else {
+                else {
+                    Console.WriteLine("Invalid table choice.");
+                }
+            }
+            else {
                 Console.WriteLine("Invalid choice.");
             }
         }
+
         public static void Update(){ 
-        
+            Console.WriteLine("1. Update Publisher");
+            Console.WriteLine("2. Update Developer");
+            Console.WriteLine("3. Update Genre");
+            Console.WriteLine("4. Update Game");
+            Console.WriteLine("5. Update User");
+            Console.WriteLine("6. Update GameLibrary entry");
+            Console.WriteLine("0. Back");
+
+            Console.Write("Choose an option: ");
+            string input = Console.ReadLine();
+            Console.WriteLine();
+
+            switch (input) {
+                case "1":
+                    DataUpdater.UpdatePublisher();
+                    break;
+                case "2":
+                    DataUpdater.UpdateDeveloper();
+                    break;
+                case "3":
+                    DataUpdater.UpdateGenre();
+                    break;
+                case "4":
+                    DataUpdater.UpdateGame();
+                    break;
+                case "5":
+                    DataUpdater.UpdateUser();
+                    break;
+                case "6":
+                    DataUpdater.UpdateGameLibrary();
+                    break;
+                case "0":
+                    return;
+                default:
+                    Console.WriteLine("Invalid choice. Try again.");
+                    break;
+            }
         }
         public static void Delete(){ 
             Console.WriteLine("Delete Menu:");
@@ -170,25 +217,25 @@ namespace PROG2111Project {
 
             switch (choice) {
                 case "1": 
-                    Deletion.DeleteDeveloper(); 
+                    DataDeleter.DeleteDeveloper(); 
                     break;
                 case "2": 
-                    Deletion.DeletePublisher(); 
+                    DataDeleter.DeletePublisher(); 
                     break;
                 case "3": 
-                    Deletion.DeleteGenre(); 
+                    DataDeleter.DeleteGenre(); 
                     break;
                 case "4": 
-                    Deletion.DeleteGame(); 
+                    DataDeleter.DeleteGame(); 
                     break;
                 case "5": 
-                    Deletion.DeleteUser(); 
+                    DataDeleter.DeleteUser(); 
                     break;
                 case "6": 
-                    Deletion.DeleteGameGenreRelation(); 
+                    DataDeleter.DeleteGameGenreRelation(); 
                     break;
                 case "7": 
-                    Deletion.DeleteGameLibraryRelation(); 
+                    DataDeleter.DeleteGameLibraryRelation(); 
                     break;
                 case "0": 
                     return;

@@ -3,6 +3,7 @@ using System.Data;
 
 namespace PROG2111Project {
     internal class DbHelper {
+        //User must all all permissions.
         public const string connStr = "server=localhost;user=testuser;password=Password;database=steamdb;";
         public static void RunCustomQuery(){
             Console.Write("Enter a SELECT query: ");
@@ -62,8 +63,7 @@ namespace PROG2111Project {
             }
         }
         public static bool EnsureTableExists(string tableName) {
-            if (TableExists(tableName))
-                return true;
+            if (TableExists(tableName)) return true;
 
             Console.WriteLine($"Table '{tableName}' does not exist. Creating all tables...");
             CreateAllTables();
@@ -106,33 +106,48 @@ namespace PROG2111Project {
         public static void DropAllTables() {
             string[] dropOrder = {
                 "GameLibrary", "GameGenre", "SteamUser", 
-                "Game", "Genre", "Developer", "Publisher"};
+                "Game", "Genre", "Developer", "Publisher"
+            };
 
-            bool anyExists = dropOrder.Any(t => DbHelper.TableExists(t));
+            bool anyExists = false;
+            foreach (string t in dropOrder) {
+                if (DbHelper.TableExists(t)) {
+                    anyExists = true;
+                    break;
+                }
+            }
 
-            if (!anyExists){
+            if (!anyExists) {
                 Console.WriteLine("No tables exist. Nothing to drop.");
-            } else {
+                return;
+            }
+
+            try {
                 using MySqlConnection conn = new MySqlConnection(connStr);
                 conn.Open();
 
-                foreach (string table in dropOrder){
-                    if (!DbHelper.TableExists(table)){
-                        Console.WriteLine($"Table '{table}' does not exist, skipping.");
-                    } else {
-                        using MySqlCommand cmd = new MySqlCommand($"DROP TABLE {table};", conn);
-                        try {
-                            cmd.ExecuteNonQuery();
-                            Console.WriteLine($"Dropped table: {table}");
-                        } catch (Exception ex){
-                            Console.WriteLine($"Failed to drop {table}: {ex.Message}");
+                foreach (string table in dropOrder) {
+                    try {
+                        if (!DbHelper.TableExists(table)) {
+                            Console.WriteLine($"Table '{table}' does not exist, skipping.");
+                            continue;
                         }
+
+                        using MySqlCommand cmd = new MySqlCommand($"DROP TABLE {table};", conn);
+                        cmd.ExecuteNonQuery();
+                        Console.WriteLine($"Dropped table: {table}");
+                    } catch (Exception ex) {
+                        Console.WriteLine($"Failed to drop {table}: {ex.Message}");
                     }
                 }
-                Creation.InitializeCreatedFlags();
-                Console.WriteLine("All existing tables dropped."); 
+
+                DataCreator.InitializeCreatedFlags();
+                Console.WriteLine("All existing tables dropped.");
+            } catch (Exception ex) {
+                Console.WriteLine("Failed to open database connection: " + ex.Message);
             }
         }
+
 
 
         public static void CreateAllTables() {
@@ -216,30 +231,73 @@ namespace PROG2111Project {
         }
 
         public static bool RowExists(string table, string keyColumn, int id) {
-            string sql = $"SELECT COUNT(*) FROM {table} WHERE {keyColumn} = @id";
-            using MySqlConnection conn = new MySqlConnection(connStr);
-            conn.Open();
-            using MySqlCommand cmd = new MySqlCommand(sql, conn);
+            try {
+                string sql = $"SELECT COUNT(*) FROM {table} WHERE {keyColumn} = @id";
+                using var conn = new MySqlConnection(connStr);
+                using var cmd = new MySqlCommand(sql, conn);
+
                 cmd.Parameters.AddWithValue("@id", id);
+
+                conn.Open();
                 return (long)cmd.ExecuteScalar() > 0;
+            } catch (Exception ex) {
+                Console.WriteLine($"Error checking existence in {table}: {ex.Message}");
+                return false;
+            }
         }
+
 
         public static bool HasDependencies(string table, string fkColumn, int id) {
-            string sql = $"SELECT COUNT(*) FROM {table} WHERE {fkColumn} = @id";
-            using MySqlConnection conn = new MySqlConnection(connStr);
-            conn.Open();
-            using MySqlCommand cmd = new MySqlCommand(sql, conn);
+            try {
+                string sql = $"SELECT COUNT(*) FROM {table} WHERE {fkColumn} = @id";
+                using var conn = new MySqlConnection(connStr);
+                using var cmd = new MySqlCommand(sql, conn);
+
                 cmd.Parameters.AddWithValue("@id", id);
+
+                conn.Open();
                 return (long)cmd.ExecuteScalar() > 0;
+            } catch (Exception ex) {
+                Console.WriteLine($"Error checking dependencies in {table}: {ex.Message}");
+                return false;
+            }
         }
 
+
         public static void DeleteRow(string table, string keyColumn, int id) {
-            string sql = $"DELETE FROM {table} WHERE {keyColumn} = @id";
-            using MySqlConnection conn = new MySqlConnection(connStr);
-            conn.Open();
-            using MySqlCommand cmd = new MySqlCommand(sql, conn);
+            try {
+                string sql = $"DELETE FROM {table} WHERE {keyColumn} = @id";
+                using var conn = new MySqlConnection(connStr);
+                using var cmd = new MySqlCommand(sql, conn);
+
                 cmd.Parameters.AddWithValue("@id", id);
+
+                conn.Open();
                 cmd.ExecuteNonQuery();
+            } catch (Exception ex) {
+                Console.WriteLine($"Error deleting row from {table}: {ex.Message}");
+            }
+        }
+
+
+        public static void UpdateValue(string table, string column, object newValue, string keyColumn, int id) {
+            try {
+                string sql = $"UPDATE {table} SET {column}=@newVal WHERE {keyColumn}=@id";
+
+                using var conn = new MySqlConnection(connStr);
+                using var cmd = new MySqlCommand(sql, conn);
+
+                cmd.Parameters.AddWithValue("@newVal", newValue);
+                cmd.Parameters.AddWithValue("@id", id);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            } catch (MySqlException ex) {
+                Console.WriteLine($"MySQL Error updating {table}.{column}: {ex.Message}");
+            } catch (Exception ex) {
+                Console.WriteLine($"Unexpected error updating {table}.{column}: {ex.Message}");
+            }
         }
     }
 }
