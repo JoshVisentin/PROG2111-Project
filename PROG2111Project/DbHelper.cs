@@ -1,10 +1,30 @@
-﻿using MySql.Data.MySqlClient;
+﻿/*
+* FILE: DbHelper.cs
+* PROJECT: PROG2111 – Project
+* PROGRAMMERS: Josh Visentin, Trent Beitz
+* FIRST VERSION: 2025-12-03
+* DESCRIPTION:
+* Database utility class. Provides reusable methods for connecting
+* to MySQL, running queries, checking table existence, verifying dependencies,
+* inserting rows through DataAdapters, updating records, deleting rows, &
+* creating/dropping all tables defined in the ERD.
+*/
+using MySql.Data.MySqlClient;
 using System.Data;
 
 namespace PROG2111Project {
     internal class DbHelper {
         //User must all all permissions.
         public const string connStr = "server=localhost;user=testuser;password=Password;database=steamdb;";
+        /**
+         * FUNCTION: RunCustomQuery
+         * DESCRIPTION:
+         * Executes user-supplied SELECT query & prints results.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void RunCustomQuery(){
             Console.Write("Enter a SELECT query: ");
             string query = Console.ReadLine();
@@ -35,6 +55,17 @@ namespace PROG2111Project {
                 }
             }    
         }
+        /**
+         * FUNCTION: InsertRows
+         * DESCRIPTION:
+         * Loads table into DataTable, allows caller to add rows, &
+         * commits inserts using DataAdapter.
+         * PARAMETERS:
+         * string tableName: Target table.
+         * Action<DataTable> fillRows: Callback that inserts new rows.
+         * RETURNS:
+         * None.
+         */
         public static void InsertRows(string tableName, Action<DataTable> fillRows) {
             string query = $"SELECT * FROM {tableName}";
 
@@ -62,6 +93,15 @@ namespace PROG2111Project {
                 Console.WriteLine($"Error creating rows for {tableName}: {ex.Message}");
             }
         }
+        /**
+         * FUNCTION: EnsureTableExists
+         * DESCRIPTION:
+         * Checks whether table exists, creates all tables if missing.
+         * PARAMETERS:
+         * string tableName: Table to verify.
+         * RETURNS:
+         * bool: True if table exists afterward.
+         */
         public static bool EnsureTableExists(string tableName) {
             if (TableExists(tableName)) return true;
 
@@ -70,6 +110,15 @@ namespace PROG2111Project {
 
             return TableExists(tableName);
         }
+        /**
+         * FUNCTION: TableExists
+         * DESCRIPTION:
+         * Checks INFORMATION_SCHEMA to verify whether table exists.
+         * PARAMETERS:
+         * string tableName: Table to check.
+         * RETURNS:
+         * bool: True if table exists.
+         */
         public static bool TableExists(string tableName) {
             string query = @"SELECT COUNT(*) FROM information_schema.tables 
                              WHERE table_schema = DATABASE() AND table_name = @name";
@@ -87,6 +136,15 @@ namespace PROG2111Project {
                 return false;
             }
         }
+        /**
+         * FUNCTION: TableHasRows
+         * DESCRIPTION:
+         * Determines whether table contains any records.
+         * PARAMETERS:
+         * string tableName: Table to inspect.
+         * RETURNS:
+         * bool: True if table has rows.
+         */
         public static bool TableHasRows(string tableName) {
             if (!TableExists(tableName)) return false;
 
@@ -103,6 +161,16 @@ namespace PROG2111Project {
                 return false;
             }
         }
+        /**
+         * FUNCTION: DropAllTables
+         * DESCRIPTION:
+         * Drops all project tables in dependency-safe order, skipping
+         * missing tables & reporting errors.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void DropAllTables() {
             string[] dropOrder = {
                 "GameLibrary", "GameGenre", "SteamUser", 
@@ -147,9 +215,16 @@ namespace PROG2111Project {
                 Console.WriteLine("Failed to open database connection: " + ex.Message);
             }
         }
-
-
-
+        /**
+         * FUNCTION: CreateAllTables
+         * DESCRIPTION:
+         * Creates every required project table using predefined SQL,
+         * executing each CREATE statement in order.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void CreateAllTables() {
             string sql = @"
                 CREATE TABLE Developer(
@@ -229,7 +304,17 @@ namespace PROG2111Project {
                 Console.WriteLine("Table creation failed: " + ex.Message);
             }
         }
-
+        /**
+         * FUNCTION: RowExists
+         * DESCRIPTION:
+         * Performs COUNT(*) check to verify row exists by primary key.
+         * PARAMETERS:
+         * string table: Table name.
+         * string keyColumn: Primary key column.
+         * int id: Key value.
+         * RETURNS:
+         * bool: True if the row exists.
+         */
         public static bool RowExists(string table, string keyColumn, int id) {
             try {
                 string sql = $"SELECT COUNT(*) FROM {table} WHERE {keyColumn} = @id";
@@ -245,8 +330,17 @@ namespace PROG2111Project {
                 return false;
             }
         }
-
-
+        /**
+         * FUNCTION: HasDependencies
+         * DESCRIPTION:
+         * Checks whether any rows reference given ID via foreign key.
+         * PARAMETERS:
+         * string table: Child table.
+         * string fkColumn: Foreign key column.
+         * int id: Value to check.
+         * RETURNS:
+         * bool: True if dependencies exist.
+         */
         public static bool HasDependencies(string table, string fkColumn, int id) {
             try {
                 string sql = $"SELECT COUNT(*) FROM {table} WHERE {fkColumn} = @id";
@@ -262,8 +356,17 @@ namespace PROG2111Project {
                 return false;
             }
         }
-
-
+        /**
+         * FUNCTION: DeleteRow
+         * DESCRIPTION:
+         * Executes DELETE on specified table by ID.
+         * PARAMETERS:
+         * string table: Table to modify.
+         * string keyColumn: Primary key column.
+         * int id: Row to delete.
+         * RETURNS:
+         * None.
+         */
         public static void DeleteRow(string table, string keyColumn, int id) {
             try {
                 string sql = $"DELETE FROM {table} WHERE {keyColumn} = @id";
@@ -278,8 +381,19 @@ namespace PROG2111Project {
                 Console.WriteLine($"Error deleting row from {table}: {ex.Message}");
             }
         }
-
-
+        /**
+         * FUNCTION: UpdateValue
+         * DESCRIPTION:
+         * Updates single column in table using parameterized UPDATE statement.
+         * PARAMETERS:
+         * string table: Table to update.
+         * string column: Column to change.
+         * object newValue: New value to assign.
+         * string keyColumn: Primary key column.
+         * int id: Key value of target row.
+         * RETURNS:
+         * None.
+         */
         public static void UpdateValue(string table, string column, object newValue, string keyColumn, int id) {
             try {
                 string sql = $"UPDATE {table} SET {column}=@newVal WHERE {keyColumn}=@id";

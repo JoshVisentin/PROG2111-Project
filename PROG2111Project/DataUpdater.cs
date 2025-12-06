@@ -1,7 +1,27 @@
-﻿using MySql.Data.MySqlClient;
+﻿/*
+* FILE: DataUpdater.cs
+* PROJECT: PROG2111 – Project
+* PROGRAMMERS: Josh Visentin, Trent Beitz
+* FIRST VERSION: 2025-12-03
+* DESCRIPTION:
+* Provides update operations for all entities in the Steam database.
+* Uses ADO.NET to update individual fields, with validation & error checking.
+*/
+using MySql.Data.MySqlClient;
 
 namespace PROG2111Project {
     internal class DataUpdater {
+        /**
+         * FUNCTION: UpdateDeveloper
+         * DESCRIPTION:
+         * Allows user to update existing Developer record by selecting which
+         * field to modify. Validates that the ID exists before performing update. 
+         * Uses DbHelper.UpdateValue to push changes to database.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void UpdateDeveloper() {
             Console.Write("Enter DeveloperID to update: ");
             if (!int.TryParse(Console.ReadLine(), out int id)) return;
@@ -34,7 +54,17 @@ namespace PROG2111Project {
 
             Console.WriteLine("Developer updated successfully.");
         }
-
+        /**
+         * FUNCTION: UpdatePublisher
+         * DESCRIPTION:
+         * Allows user to update existing Publisher record by selecting which
+         * field to modify. Validates that the ID exists before performing update. 
+         * Uses DbHelper.UpdateValue to push changes to database.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void UpdatePublisher() {
             Console.Write("Enter PublisherID to update: ");
             if (!int.TryParse(Console.ReadLine(), out int id)) return;
@@ -63,7 +93,17 @@ namespace PROG2111Project {
 
             Console.WriteLine("Publisher updated successfully.");
         }
-
+        /**
+         * FUNCTION: UpdateGenre
+         * DESCRIPTION:
+         * Allows user to update existing Genre record by selecting which
+         * field to modify. Validates that the ID exists before performing update. 
+         * Uses DbHelper.UpdateValue to push changes to database.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void UpdateGenre() {
             Console.Write("Enter GenreID: ");
             if (!int.TryParse(Console.ReadLine(), out int id)) return;
@@ -164,7 +204,17 @@ namespace PROG2111Project {
             }
             Console.WriteLine("Game updated successfully.");
         }
-
+        /**
+         * FUNCTION: UpdateUser
+         * DESCRIPTION:
+         * Allows user to update existing SteamUser record by selecting which
+         * field to modify. Validates that the ID exists before performing update. 
+         * Uses DbHelper.UpdateValue to push changes to database.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void UpdateUser() {
             Console.Write("Enter UserID: ");
             if (!int.TryParse(Console.ReadLine(), out int id)) return;
@@ -217,7 +267,17 @@ namespace PROG2111Project {
 
             Console.WriteLine("User updated successfully.");
         }
-
+        /**
+         * FUNCTION: UpdateGameLibrary
+         * DESCRIPTION:
+         * Allows user to update existing user-game relationship in GameLibrary.
+         * Confirms that the composite key (UserID, GameID) exists before modifying field. 
+         * Uses DbHelper.UpdateValue to push changes to database.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void UpdateGameLibrary() {
             try {
                 Console.Write("Enter UserID: ");

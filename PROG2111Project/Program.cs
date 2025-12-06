@@ -1,15 +1,14 @@
 ﻿/*
- * Authours: Josh, Trent
- * Start: 3/12/2025
- * End: 
- * Class: PROG2111
- * Assignment: PROJECT
- * Disription: 
- * Develop C# programs that connect to the MySQL database using the ADO.NET
-• Perform CRUD operations (Create, Read, Update, Delete) for the entities defined in your ERD.
-• Ensure proper error handling and transaction control.
-• Use the ADO.NET MySQL library to establish the connection and perform operations. 
- */
+* FILE: Program.cs
+* PROJECT: PROG2111 – Project
+* PROGRAMMERS: Josh Visentin, Trent Beitz
+* FIRST VERSION: 2025-12-03
+* DESCRIPTION:
+* Entry point for the PROG2111 project. Handles main menu navigation for
+* Create, Read, Update, & Delete operations. Calls helper classes to interact
+* with the MySQL database using ADO.NET. Supports table creation, table dropping,
+* & directing user into CRUD operations for all ERD entities.
+*/
 using MySql.Data.MySqlClient;
 using System.Data;
 
@@ -63,7 +62,17 @@ namespace PROG2111Project {
                 Console.WriteLine();
             }
         }
-
+        /**
+         * FUNCTION: Create
+         * DESCRIPTION:
+         * Presents user with options to create initial data for each database table.
+         * Calls DataCreator methods based on user selection & performs validation
+         * to prevent duplicate or out-of-order creation.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void Create(){ 
             Console.WriteLine("1. Create all Publishers.");
             Console.WriteLine("2. Create all Developers.");
@@ -107,6 +116,17 @@ namespace PROG2111Project {
                     break;
             }
         }
+        /**
+         * FUNCTION: Read
+         * DESCRIPTION:
+         * Displays read menu & retrieves data from selected tables using SQL
+         * SELECT statements. Executes custom query when requested. Results are
+         * displayed through PrintTable function.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void Read() {
             string[] tables = { "Publisher", "Developer", "Genre", "Game", "GameLibrary", "SteamUser" };
 
@@ -160,7 +180,17 @@ namespace PROG2111Project {
                 Console.WriteLine("Invalid choice.");
             }
         }
-
+        /**
+         * FUNCTION: Update
+         * DESCRIPTION:
+         * Presents update menu & allows user to modify existing records
+         * in any table. Routes user selections to appropriate update
+         * function in DataUpdater class.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void Update(){ 
             Console.WriteLine("1. Update Publisher");
             Console.WriteLine("2. Update Developer");
@@ -200,6 +230,17 @@ namespace PROG2111Project {
                     break;
             }
         }
+        /**
+         * FUNCTION: Delete
+         * DESCRIPTION:
+         * Displays deletion options & processes user requests to remove records.
+         * Performs dependency checks before deletion & forwards calls to
+         * DataDeleter class for removal.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void Delete(){ 
             Console.WriteLine("Delete Menu:");
             Console.WriteLine("1. Delete Developer");
@@ -244,7 +285,16 @@ namespace PROG2111Project {
                     break;
             }
         }
-
+        /**
+         * FUNCTION: PrintTable
+         * DESCRIPTION:
+         * Formats & prints contents of a DataTable to console using
+         * column-aligned output.
+         * PARAMETERS:
+         * DataTable table: Table returned from SQL query to display.
+         * RETURNS:
+         * None.
+         */
         public static void PrintTable(DataTable table) {
             foreach (DataColumn col in table.Columns) {
                 Console.Write($"{col.ColumnName,-20}");

@@ -1,4 +1,15 @@
-﻿using System.Data;
+﻿/*
+* FILE: DataCreator.cs
+* PROJECT: PROG2111 – Project
+* PROGRAMMERS: Josh Visentin, Trent Beitz
+* FIRST VERSION: 2025-12-03
+* DESCRIPTION:
+* Handles insertion of initial data into all database tables defined
+* in the ERD. Ensures proper creation order, checks prerequisites, & prevents
+* duplicate data loading. Uses ADO.NET & DbHelper utilities to populate
+* Publisher, Developer, Genre, Game, GameGenre, SteamUser, & GameLibrary tables.
+*/
+using System.Data;
 
 namespace PROG2111Project {
     internal class DataCreator {
@@ -9,6 +20,17 @@ namespace PROG2111Project {
         private static bool gameGenresCreated = false;
         private static bool usersCreated = false;
         private static bool gameLibraryCreated = false;
+        /**
+         * FUNCTION: InitializeCreatedFlags
+         * DESCRIPTION:
+         * Resets all internal boolean flags tracking whether initial data has been 
+         * inserted into each table. This is used after dropping tables to 
+         * ensure creation functions run correctly when called again.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void InitializeCreatedFlags() {
             publishersCreated  = DbHelper.TableExists("Publisher")   && DbHelper.TableHasRows("Publisher");
             developersCreated  = DbHelper.TableExists("Developer")   && DbHelper.TableHasRows("Developer");
@@ -18,7 +40,17 @@ namespace PROG2111Project {
             usersCreated       = DbHelper.TableExists("SteamUser")   && DbHelper.TableHasRows("SteamUser");
             gameLibraryCreated = DbHelper.TableExists("GameLibrary") && DbHelper.TableHasRows("GameLibrary");
         }
-
+        /**
+         * FUNCTION: CreatePublishers
+         * DESCRIPTION:
+         * Inserts sample Publisher records into Publisher table.
+         * Ensures publishers are only created once per program run by checking 
+         * associated created flag. Uses DbHelper.InsertRows for insertion.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void CreatePublishers(){ 
             if (publishersCreated){
                 Console.WriteLine("Publishers already created.");
@@ -46,7 +78,17 @@ namespace PROG2111Project {
                 publishersCreated = true;
             }   
         }
-    
+        /**
+         * FUNCTION: CreateDevelopers
+         * DESCRIPTION:
+         * Inserts sample Developer records into Developers table.
+         * Ensures developers are only created once per program run by checking 
+         * associated created flag. Uses DbHelper.InsertRows for insertion.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void CreateDevelopers(){ 
             if (developersCreated){
                 Console.WriteLine("Developers already created.");
@@ -80,7 +122,17 @@ namespace PROG2111Project {
                 publishersCreated = true; 
             }
         }
-    
+        /**
+         * FUNCTION: CreateGenres
+         * DESCRIPTION:
+         * Inserts sample Genre records into Genres table.
+         * Ensures genres are only created once per program run by checking 
+         * associated created flag. Uses DbHelper.InsertRows for insertion.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void CreateGenres(){ 
             if (genresCreated){
                 Console.WriteLine("Genres already created.");
@@ -103,7 +155,17 @@ namespace PROG2111Project {
                 genresCreated = true;
             }
         }
-
+        /**
+         * FUNCTION: CreateGames
+         * DESCRIPTION:
+         * Inserts sample Game records into Games table.
+         * Ensures games are only created once per program run by checking 
+         * associated created flag. Uses DbHelper.InsertRows for insertion.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void CreateGames(){
             if (gamesCreated){
                 Console.WriteLine("Games already created.");
@@ -125,7 +187,7 @@ namespace PROG2111Project {
                     g1["SystemSupport"] = "Mac";
                     g1["AgeRating"] = "M";
                     g1["Description"] = "A Game";
-                    g1["ReleaseDate"] = DateTime.Parse("2001-11-09");
+                    g1["ReleaseDate"] = "2001-11-09";
                     g1["Price"] = 999.99;
                     g1["Achievements"] = 200;
                     g1["DeveloperID"] = 1;
@@ -137,7 +199,7 @@ namespace PROG2111Project {
                     g2["SystemSupport"] = "Windows";
                     g2["AgeRating"] = "T";
                     g2["Description"] = "Build Your Galaxy";
-                    g2["ReleaseDate"] = DateTime.Parse("2010-07-22");
+                    g2["ReleaseDate"] = "2010-07-22";
                     g2["Price"] = 59.49;
                     g2["Achievements"] = 145;
                     g2["DeveloperID"] = 3;
@@ -149,7 +211,7 @@ namespace PROG2111Project {
                     g3["SystemSupport"] = "Windows";
                     g3["AgeRating"] = "E";
                     g3["Description"] = "Keep you sane";
-                    g3["ReleaseDate"] = DateTime.Parse("2002-04-82");
+                    g3["ReleaseDate"] = "2022-04-08";
                     g3["Price"] = 0;
                     g3["Achievements"] = 5;
                     g3["DeveloperID"] = 1;
@@ -161,7 +223,7 @@ namespace PROG2111Project {
                     g4["SystemSupport"] = "Windows";
                     g4["AgeRating"] = "R";
                     g4["Description"] = "Sell us your soul";
-                    g4["ReleaseDate"] = DateTime.Parse("1998-06-02");
+                    g4["ReleaseDate"] = "1998-06-02";
                     g4["Price"] = 0;
                     g4["Achievements"] = 18223;
                     g4["DeveloperID"] = 4;
@@ -172,6 +234,17 @@ namespace PROG2111Project {
                 gamesCreated = true;
             }
         }
+        /**
+         * FUNCTION: CreateGameGenres
+         * DESCRIPTION:
+         * Inserts sample GameGenre records into GemeGenres table.
+         * Ensures game genres are only created once per program run by checking 
+         * associated created flag. Uses DbHelper.InsertRows for insertion.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void CreateGameGenres() {
             if (gameGenresCreated){
                 Console.WriteLine("GameGenres already created.");
@@ -232,7 +305,17 @@ namespace PROG2111Project {
                 gameGenresCreated = true;
             }
         }
-
+        /**
+         * FUNCTION: CreateUsers
+         * DESCRIPTION:
+         * Inserts sample User records into SteamUser table.
+         * Ensures users are only created once per program run by checking 
+         * associated created flag. Uses DbHelper.InsertRows for insertion.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void CreateUsers() {
             if (usersCreated){
                 Console.WriteLine("Users already created.");
@@ -245,8 +328,8 @@ namespace PROG2111Project {
                     u1["Name"] = "Terry";
                     u1["Email"] = "terryman@gmail.com";
                     u1["Address"] = "123 That Street";
-                    u1["DateCreated"] = DateTime.Parse("2007-01-01");
-                    u1["DateOfBirth"] = DateTime.Parse("1832-08-23");
+                    u1["DateCreated"] = "2007-01-01";
+                    u1["DateOfBirth"] = "1832-08-23";
                     u1["AccountBalance"] = 85.97;
                     table.Rows.Add(u1);
 
@@ -254,8 +337,8 @@ namespace PROG2111Project {
                     u2["Name"] = "Lina";
                     u2["Email"] = "lindaloo@fastmail.com";
                     u2["Address"] = "77 Forest Lane";
-                    u2["DateCreated"] = DateTime.Parse("2012-03-14");
-                    u2["DateOfBirth"] = DateTime.Parse("1979-11-05");
+                    u2["DateCreated"] = "2012-03-14";
+                    u2["DateOfBirth"] = "1979-11-05";
                     u2["AccountBalance"] = 12.40;
                     table.Rows.Add(u2);
 
@@ -263,8 +346,8 @@ namespace PROG2111Project {
                     u3["Name"] = "Marcus";
                     u3["Email"] = "marcusg@yahoo.com";
                     u3["Address"] = "904 Sunset Road";
-                    u3["DateCreated"] = DateTime.Parse("2020-09-30");
-                    u3["DateOfBirth"] = DateTime.Parse("1995-04-18");
+                    u3["DateCreated"] = "2020-09-30";
+                    u3["DateOfBirth"] = "1995-04-18";
                     u3["AccountBalance"] = 203.11;
                     table.Rows.Add(u3);
                 });
@@ -272,6 +355,17 @@ namespace PROG2111Project {
                 usersCreated = true;
             }
         }
+        /**
+         * FUNCTION: CreateGameLibrary
+         * DESCRIPTION:
+         * Inserts sample GameLibrary records into GameLibrary table.
+         * Ensures game libraries are only created once per program run by checking 
+         * associated created flag. Uses DbHelper.InsertRows for insertion.
+         * PARAMETERS:
+         * None.
+         * RETURNS:
+         * None.
+         */
         public static void CreateGameLibrary() {
             if (gameLibraryCreated){
                 Console.WriteLine("GameLibrary already created.");
@@ -291,27 +385,27 @@ namespace PROG2111Project {
                     DataRow r1 = table.NewRow();
                     r1["UserID"] = 1;
                     r1["GameID"] = 1;
-                    r1["PurchaseDate"] = DateTime.Parse("2009-06-09");
+                    r1["PurchaseDate"] = "2009-06-09";
                     r1["HoursPlayed"] = 995.7;
                     table.Rows.Add(r1);
 
                     DataRow r2 = table.NewRow();
                     r2["UserID"] = 2;
                     r2["GameID"] = 2;
-                    r2["PurchaseDate"] = DateTime.Parse("2010-01-12");
+                    r2["PurchaseDate"] = "2010-01-12";
                     r2["HoursPlayed"] = 120.0;
                     table.Rows.Add(r2);
 
                     DataRow r3 = table.NewRow();
                     r3["UserID"] = 3;
                     r3["GameID"] = 3;
-                    r3["PurchaseDate"] = DateTime.Parse("2015-09-05");
+                    r3["PurchaseDate"] = "2015-09-05";
                     r3["HoursPlayed"] = 243;
                     table.Rows.Add(r3);
 
                     DataRow r4 = table.NewRow();
                     r4["UserID"] = 3;
-                    r4["GameID"] = 3;
+                    r4["GameID"] = 4;
                     r4["PurchaseDate"] = DateTime.Parse("2019-05-14");
                     r4["HoursPlayed"] = 63539.99;
                     table.Rows.Add(r4);
