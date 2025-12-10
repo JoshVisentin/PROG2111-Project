@@ -14,7 +14,7 @@ using System.Data;
 
 namespace PROG2111Project {
     internal class DbHelper {
-        //User must all all permissions.
+        //Global connection string used for all operations. User must all all permissions.
         public const string connStr = "server=localhost;user=testuser;password=Password;database=steamdb;";
         /**
          * FUNCTION: RunCustomQuery
@@ -29,10 +29,12 @@ namespace PROG2111Project {
             Console.Write("Enter a SELECT query: ");
             string query = Console.ReadLine();
 
+            //Only allow select statements.
             if (!query.TrimStart().StartsWith("SELECT", StringComparison.OrdinalIgnoreCase)){
                 Console.WriteLine("Only SELECT statements are allowed.");
             } else {
                 try {
+                    //Open connect & run query.
                     using MySqlConnection conn = new MySqlConnection(connStr);
                     conn.Open();
 
@@ -40,15 +42,13 @@ namespace PROG2111Project {
                     DataSet ds = new DataSet();
                     da.Fill(ds);
 
+                    //If no results, exit early.
                     if(ds.Tables.Count == 0) {
                         Console.WriteLine("Query returned no results.");
-                        return;
-                    }
-                    DataTable table = ds.Tables[0];
-
-                    foreach(DataRow row in table.Rows) {
-                        foreach(DataColumn col in table.Columns) Console.Write($"{row[col]}\t");
-                        Console.WriteLine();
+                    } else {
+                        //Print results.
+                        DataTable table = ds.Tables[0];
+                        Program.PrintTable(table);
                     }
                 } catch(Exception ex) {
                     Console.WriteLine("Query failed: " + ex.Message);
@@ -74,21 +74,20 @@ namespace PROG2111Project {
                 DataSet ds = new DataSet();
                 conn.Open();
 
+                //Load existing rows into DataTable.
                 MySqlDataAdapter da = new MySqlDataAdapter(query, conn);
                 da.Fill(ds, tableName);
                 conn.Close();
 
                 DataTable table = ds.Tables[tableName];
 
+                //Insert new rows into DataTable.
                 fillRows(table);
 
-                using MySqlConnection conn2 = new MySqlConnection(connStr);
-                conn2.Open();
-
-                MySqlDataAdapter da2 = new MySqlDataAdapter(query, conn2);
-                MySqlCommandBuilder builder = new MySqlCommandBuilder(da2);
-                da2.Update(ds, tableName);
-
+                //Push changes to mySQL.
+                conn.Open();
+                MySqlCommandBuilder builder = new MySqlCommandBuilder(da);
+                da.Update(ds, tableName);
             } catch (Exception ex) {
                 Console.WriteLine($"Error creating rows for {tableName}: {ex.Message}");
             }
@@ -172,11 +171,13 @@ namespace PROG2111Project {
          * None.
          */
         public static void DropAllTables() {
+            //Drop tables with dependancies first.
             string[] dropOrder = {
                 "GameLibrary", "GameGenre", "SteamUser", 
                 "Game", "Genre", "Developer", "Publisher"
             };
 
+            //Check if any tables exist before dropping.
             bool anyExists = false;
             foreach (string t in dropOrder) {
                 if (DbHelper.TableExists(t)) {
@@ -196,6 +197,7 @@ namespace PROG2111Project {
 
                 foreach (string table in dropOrder) {
                     try {
+                        //Skip tables that dont exist.
                         if (!DbHelper.TableExists(table)) {
                             Console.WriteLine($"Table '{table}' does not exist, skipping.");
                             continue;
@@ -208,7 +210,7 @@ namespace PROG2111Project {
                         Console.WriteLine($"Failed to drop {table}: {ex.Message}");
                     }
                 }
-
+                //Reset creation flags.
                 DataCreator.InitializeCreatedFlags();
                 Console.WriteLine("All existing tables dropped.");
             } catch (Exception ex) {
@@ -226,6 +228,7 @@ namespace PROG2111Project {
          * None.
          */
         public static void CreateAllTables() {
+            //Full ERD-defined entity tables.
             string sql = @"
                 CREATE TABLE Developer(
 	                DeveloperID INT PRIMARY KEY AUTO_INCREMENT,
@@ -291,12 +294,12 @@ namespace PROG2111Project {
                 using MySqlConnection conn = new MySqlConnection(connStr);
                 conn.Open();
 
+                //Split string into individual CREATE statements.
                 string[] commands = sql.Split(";", StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (string cmdText in commands) {
-                    using MySqlCommand cmd = new MySqlCommand(cmdText, conn) {
-                    };
-                        cmd.ExecuteNonQuery();
+                    using MySqlCommand cmd = new MySqlCommand(cmdText, conn);
+                    cmd.ExecuteNonQuery();
                 }
 
                 Console.WriteLine("All tables created successfully.");

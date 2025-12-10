@@ -30,17 +30,17 @@ namespace PROG2111Project {
                 Console.WriteLine("Invalid ID.");
                 return;
             }
-
+            //Ensure entry exists before deletion.
             if (!DbHelper.RowExists("Developer", "DeveloperID", id)) {
                 Console.WriteLine("Developer does not exist.");
                 return;
             }
-
+            //Only allow deletion if entry has no dependencies.
             if (DbHelper.HasDependencies("Game", "DeveloperID", id)) {
                 Console.WriteLine("Cannot delete developer — games depend on it.");
                 return;
             }
-
+            //Delete entry with specified id.
             DbHelper.DeleteRow("Developer", "DeveloperID", id);
             Console.WriteLine("Developer deleted successfully.");
         }
@@ -62,17 +62,17 @@ namespace PROG2111Project {
                 Console.WriteLine("Invalid ID.");
                 return;
             }
-
+            //Ensure entry exists before deletion.
             if (!DbHelper.RowExists("Publisher", "PublisherID", id)) {
                 Console.WriteLine("Publisher does not exist.");
                 return;
             }
-
+            //Only allow deletion if entry has no dependencies.
             if (DbHelper.HasDependencies("Game", "PublisherID", id)) {
                 Console.WriteLine("Cannot delete publisher — games depend on it.");
                 return;
             }
-
+            //Delete entry with specified id.
             DbHelper.DeleteRow("Publisher", "PublisherID", id);
             Console.WriteLine("Publisher deleted successfully.");
         }
@@ -94,17 +94,17 @@ namespace PROG2111Project {
                 Console.WriteLine("Invalid ID.");
                 return;
             }
-
+            //Ensure entry exists before deletion.
             if (!DbHelper.RowExists("Genre", "GenreID", id)) {
                 Console.WriteLine("Genre does not exist.");
                 return;
             }
-
+            //Only allow deletion if entry has no dependencies.
             if (DbHelper.HasDependencies("GameGenre", "GenreID", id)) {
                 Console.WriteLine("Cannot delete genre — it is used by one or more games.");
                 return;
             }
-
+            //Delete entry with specified id.
             DbHelper.DeleteRow("Genre", "GenreID", id);
             Console.WriteLine("Genre deleted successfully.");
         }
@@ -126,22 +126,21 @@ namespace PROG2111Project {
                 Console.WriteLine("Invalid ID.");
                 return;
             }
-
+            //Ensure entry exists before deletion.
             if (!DbHelper.RowExists("Game", "GameID", id)) {
                 Console.WriteLine("Game does not exist.");
                 return;
             }
-
+            //Only allow deletion if entry has no dependencies.
             if (DbHelper.HasDependencies("GameLibrary", "GameID", id)) {
                 Console.WriteLine("Cannot delete game — users own this game.");
                 return;
             }
-
             if (DbHelper.HasDependencies("GameGenre", "GameID", id)) {
                 Console.WriteLine("Cannot delete game — genres are linked to it.");
                 return;
             }
-
+            //Delete entry with specified id.
             DbHelper.DeleteRow("Game", "GameID", id);
             Console.WriteLine("Game deleted successfully.");
         }
@@ -163,17 +162,17 @@ namespace PROG2111Project {
                 Console.WriteLine("Invalid ID.");
                 return;
             }
-
+            //Ensure entry exists before deletion.
             if (!DbHelper.RowExists("SteamUser", "UserID", id)) {
                 Console.WriteLine("User does not exist.");
                 return;
             }
-
+            //Only allow deletion if entry has no dependencies.
             if (DbHelper.HasDependencies("GameLibrary", "UserID", id)) {
                 Console.WriteLine("Cannot delete user — they own one or more games.");
                 return;
             }
-
+            //Delete entry with specified id.
             DbHelper.DeleteRow("SteamUser", "UserID", id);
             Console.WriteLine("User deleted successfully.");
         }
@@ -189,19 +188,19 @@ namespace PROG2111Project {
          * None.
          */
         public static void DeleteGameGenreRelation() {
+            Console.Write("Enter GameID: ");
+            if (!int.TryParse(Console.ReadLine(), out int gameID)) {
+                Console.WriteLine("Invalid GameID.");
+                return;
+            }
+            Console.Write("Enter GenreID: ");
+            if (!int.TryParse(Console.ReadLine(), out int genreID)) {
+                Console.WriteLine("Invalid GenreID.");
+                return;
+            }
+                
             try {
-                Console.Write("Enter GameID: ");
-                if (!int.TryParse(Console.ReadLine(), out int gameID)) {
-                    Console.WriteLine("Invalid GameID.");
-                    return;
-                }
-
-                Console.Write("Enter GenreID: ");
-                if (!int.TryParse(Console.ReadLine(), out int genreID)) {
-                    Console.WriteLine("Invalid GenreID.");
-                    return;
-                }
-
+                //Build delete query for composite key.
                 string sql = "DELETE FROM GameGenre WHERE GameID=@gameID AND GenreID=@genreID";
 
                 using var conn = new MySqlConnection(DbHelper.connStr);
@@ -213,12 +212,13 @@ namespace PROG2111Project {
                 conn.Open();
                 int rows = cmd.ExecuteNonQuery();
 
-                if (rows > 0)
+                //If no rows return, composite key does not exist.
+                if (rows > 0) {
                     Console.WriteLine("Relation deleted.");
-                else
-                    Console.WriteLine("Relation not found.");
-            }
-            catch (Exception ex) {
+                } else {
+                    Console.WriteLine("Relation not found."); 
+                }
+            } catch (Exception ex) {
                 Console.WriteLine("Error deleting GameGenre relation: " + ex.Message);
             }
         }
@@ -234,19 +234,19 @@ namespace PROG2111Project {
          * None.
          */
         public static void DeleteGameLibraryRelation() {
+            Console.Write("Enter UserID: ");
+            if (!int.TryParse(Console.ReadLine(), out int userID)) {
+                Console.WriteLine("Invalid UserID.");
+                return;
+            }
+            Console.Write("Enter GameID: ");
+            if (!int.TryParse(Console.ReadLine(), out int gameID)) {
+                Console.WriteLine("Invalid GameID.");
+                return;
+            }
+                
             try {
-                Console.Write("Enter UserID: ");
-                if (!int.TryParse(Console.ReadLine(), out int userID)) {
-                    Console.WriteLine("Invalid UserID.");
-                    return;
-                }
-
-                Console.Write("Enter GameID: ");
-                if (!int.TryParse(Console.ReadLine(), out int gameID)) {
-                    Console.WriteLine("Invalid GameID.");
-                    return;
-                }
-
+                //Build delete query for composite key.
                 string sql = "DELETE FROM GameLibrary WHERE UserID=@userID AND GameID=@gameID";
 
                 using var conn = new MySqlConnection(DbHelper.connStr);
@@ -257,13 +257,14 @@ namespace PROG2111Project {
 
                 conn.Open();
                 int rows = cmd.ExecuteNonQuery();
-
-                if (rows > 0)
+                
+                //If no rows return, composite key does not exist.
+                if (rows > 0) {
                     Console.WriteLine("Relation deleted.");
-                else
+                } else {
                     Console.WriteLine("Relation not found.");
-            }
-            catch (Exception ex) {
+                }
+            } catch (Exception ex) {
                 Console.WriteLine("Error deleting GameLibrary relation: " + ex.Message);
             }
         }

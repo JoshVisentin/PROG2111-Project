@@ -16,9 +16,10 @@ namespace PROG2111Project {
     internal class Program{
         private static void Main(string[] args){
             bool running = true;
-
+            //Initialize Creation flags on startup.
             DataCreator.InitializeCreatedFlags();
 
+            //Main menu loop for CRUD operations.
             while (running){
                 Console.WriteLine("1. Create");
                 Console.WriteLine("2. Read");
@@ -28,10 +29,10 @@ namespace PROG2111Project {
                 Console.WriteLine("6. Create All Tables");
                 Console.WriteLine("0. Exit");
                 Console.Write("Choose an option: ");
-
                 string input = Console.ReadLine();
                 Console.WriteLine();
 
+                //Route chosen option to corresponding handler.
                 switch (input){
                     case "1":
                         Create();
@@ -58,7 +59,6 @@ namespace PROG2111Project {
                         Console.WriteLine("Invalid option.");
                         break;
                 }
-
                 Console.WriteLine();
             }
         }
@@ -83,10 +83,10 @@ namespace PROG2111Project {
             Console.WriteLine("7. Create Game-Library Relations.");
             Console.WriteLine("0. Back");
             Console.Write("Choose an option: ");
-
             string input = Console.ReadLine();
             Console.WriteLine();
 
+            //Route chosen option to corresponding handler.
             switch (input){
                 case "1":
                     DataCreator.CreatePublishers();
@@ -128,7 +128,7 @@ namespace PROG2111Project {
          * None.
          */
         public static void Read() {
-            string[] tables = { "Publisher", "Developer", "Genre", "Game", "GameLibrary", "SteamUser" };
+            string[] tables = {"Publisher", "Developer", "Genre", "Game", "GameLibrary", "SteamUser"};
 
             Console.WriteLine("1. Show Publishers");
             Console.WriteLine("2. Show Developers");
@@ -138,26 +138,31 @@ namespace PROG2111Project {
             Console.WriteLine("6. Show Users");
             Console.WriteLine("7. Show Custom Query");
             Console.WriteLine("0. Back");
-            Console.Write("Choose: ");
-
+            Console.Write("Choose an option: ");
             string input = Console.ReadLine();
-
+            Console.WriteLine();
+            
             if (int.TryParse(input, out int choice)) {
-
+                //Handle exit.
                 if (choice == 0) return;
+                //Handle custom query option.
                 if (choice == 7) {
                     DbHelper.RunCustomQuery();
                     return;
                 }
-
+                
+                //Grab chosen table from mySQL
                 if (choice >= 1 && choice <= tables.Length) {
                     string table = tables[choice - 1];
                     Console.WriteLine("You chose table: " + table);
 
+                    //Build basic SELECT query with chosen table.
                     string query = $"SELECT * FROM {table}";
                     DataSet ds = new DataSet();
 
+
                     try {
+                        //Open connection, run query, load results into dataset.
                         using MySqlConnection conn = new MySqlConnection(DbHelper.connStr);
                         conn.Open();
 
@@ -166,17 +171,15 @@ namespace PROG2111Project {
 
                         DataTable dt = ds.Tables[table];
 
+                        //Print query results.
                         PrintTable(dt);
-                    }
-                    catch (Exception ex) {
+                    } catch (Exception ex) {
                         Console.WriteLine("Error reading: " + ex.Message);
                     }
-                }
-                else {
+                } else {
                     Console.WriteLine("Invalid table choice.");
                 }
-            }
-            else {
+            } else {
                 Console.WriteLine("Invalid choice.");
             }
         }
@@ -199,11 +202,11 @@ namespace PROG2111Project {
             Console.WriteLine("5. Update User");
             Console.WriteLine("6. Update GameLibrary entry");
             Console.WriteLine("0. Back");
-
             Console.Write("Choose an option: ");
             string input = Console.ReadLine();
             Console.WriteLine();
-
+            
+            //Route chosen option to corresponding handler.
             switch (input) {
                 case "1":
                     DataUpdater.UpdatePublisher();
@@ -251,11 +254,11 @@ namespace PROG2111Project {
             Console.WriteLine("6. Delete Game-Genre relation");
             Console.WriteLine("7. Delete Game-Library relation");
             Console.WriteLine("0. Back");
-
             Console.Write("Choose an option: ");
             string choice = Console.ReadLine();
             Console.WriteLine();
-
+            
+            //Route chosen option to corresponding handler.
             switch (choice) {
                 case "1": 
                     DataDeleter.DeleteDeveloper(); 
@@ -296,17 +299,23 @@ namespace PROG2111Project {
          * None.
          */
         public static void PrintTable(DataTable table) {
-            foreach (DataColumn col in table.Columns) {
-                Console.Write($"{col.ColumnName,-20}");
-            }
+            //Print column headers.
+            foreach (DataColumn col in table.Columns) Console.Write($"{col.ColumnName,-20}");
             Console.WriteLine();
 
+            //Print row data.
             foreach (DataRow row in table.Rows) {
-                foreach (var item in row.ItemArray) {
-                    Console.Write($"{item,-20}");
+                foreach (DataColumn col in table.Columns) {
+                    object val = row[col];
+                    if (col.ColumnName.ToLower().Contains("date") && val is DateTime dt){
+                        Console.Write($"{val,-20:yyyy-MM-dd}");
+                    } else {
+                        Console.Write($"{val,-20}");
+                    }
                 }
                 Console.WriteLine();
             }
+            Console.WriteLine();
         }
     }
 }

@@ -55,9 +55,10 @@ namespace PROG2111Project {
             if (publishersCreated){
                 Console.WriteLine("Publishers already created.");
             } else if (!DbHelper.EnsureTableExists("Publisher")) {
+                //Prevent insertion if table does not exist.
                 Console.WriteLine("Publishers table not found, create table first.");
             } else {
-
+                //Insert sample publisher data.
                 DbHelper.InsertRows("Publisher", table => {
                     DataRow r1 = table.NewRow();
                     r1["Name"] = "GrandmawsBakery";
@@ -93,9 +94,10 @@ namespace PROG2111Project {
             if (developersCreated){
                 Console.WriteLine("Developers already created.");
             } else if (!DbHelper.EnsureTableExists("Developer")) {
+                //Prevent insertion if table does not exist.
                 Console.WriteLine("Developers table not found, create table first.");
             } else {
-
+                //Insert sample developer data.
                 DbHelper.InsertRows("Developer", table => {
                     DataRow r1 = table.NewRow();
                     r1["Name"] = "Dave";
@@ -117,7 +119,6 @@ namespace PROG2111Project {
                     r4["Website"] = "pokemon.com";
                     table.Rows.Add(r4);
                 });
-
                 Console.WriteLine("Publishers Successfully Created.");
                 publishersCreated = true; 
             }
@@ -137,14 +138,15 @@ namespace PROG2111Project {
             if (genresCreated){
                 Console.WriteLine("Genres already created.");
             } else if (!DbHelper.EnsureTableExists("Genre")) {
+                //Prevent insertion if table does not exist.
                 Console.WriteLine("Genres table not found, create table first.");
             } else {
-
+                //Insert sample genre data.
                 DbHelper.InsertRows("Genre", table => {
                     string[] genreNames = {
                         "DatingSim", "Horror", "Grand Strategy",
                         "Romance", "SciFi", "FarmingSim", "Idle", "RPG"};
-
+                    //Iterate through array & add all sequentially.
                     foreach (string g in genreNames){
                         DataRow row = table.NewRow();
                         row["Name"] = g;
@@ -170,8 +172,10 @@ namespace PROG2111Project {
             if (gamesCreated){
                 Console.WriteLine("Games already created.");
             } else if (!DbHelper.EnsureTableExists("Game")) {
+                //Prevent insertion if table does not exist.
                 Console.WriteLine("Games table not found, create table first.");
             } else {
+                //Ensure required referenced tables exist.
                 if (!publishersCreated){
                     Console.WriteLine("Publishers not yet created. Creating Publishers...");
                     CreatePublishers();
@@ -180,7 +184,8 @@ namespace PROG2111Project {
                     Console.WriteLine("Developers not yet created. Creating Developers...");
                     CreateDevelopers();
                 }
-            
+
+                //Insert sample game data.
                 DbHelper.InsertRows("Game", table => {
                     DataRow g1 = table.NewRow();
                     g1["Title"] = "CookieClicker";
@@ -249,8 +254,10 @@ namespace PROG2111Project {
             if (gameGenresCreated){
                 Console.WriteLine("GameGenres already created.");
             } else if (!DbHelper.EnsureTableExists("GameGenre")) {
+                //Prevent insertion if table does not exist.
                 Console.WriteLine("GameGenres table not found, create table first.");
             } else {
+                //Ensure required referenced tables exist.
                 if (!gamesCreated) {
                     Console.WriteLine("Games not yet created. Creating Games...");
                     CreateGames();
@@ -260,6 +267,7 @@ namespace PROG2111Project {
                     CreateGenres();
                 }
 
+                //Insert sample game-genre data.
                 DbHelper.InsertRows("GameGenre", table => {
                     DataRow gg1 = table.NewRow();
                     gg1["GameID"] = 1;
@@ -320,9 +328,10 @@ namespace PROG2111Project {
             if (usersCreated){
                 Console.WriteLine("Users already created.");
             } else if (!DbHelper.EnsureTableExists("SteamUser")) {
+                //Prevent insertion if table does not exist.
                 Console.WriteLine("Users table not found, create table first.");
             } else {
-
+                //Insert sample user data.
                 DbHelper.InsertRows("SteamUser", table => {
                     DataRow u1 = table.NewRow();
                     u1["Name"] = "Terry";
@@ -335,7 +344,7 @@ namespace PROG2111Project {
 
                     DataRow u2 = table.NewRow();
                     u2["Name"] = "Lina";
-                    u2["Email"] = "lindaloo@fastmail.com";
+                    u2["Email"] = "lindaloo@mail.com";
                     u2["Address"] = "77 Forest Lane";
                     u2["DateCreated"] = "2012-03-14";
                     u2["DateOfBirth"] = "1979-11-05";
@@ -370,8 +379,10 @@ namespace PROG2111Project {
             if (gameLibraryCreated){
                 Console.WriteLine("GameLibrary already created.");
             } else if (!DbHelper.EnsureTableExists("GameLibrary")) {
+                //Prevent insertion if table does not exist.
                 Console.WriteLine("GameLibrary table not found, create table first.");
             } else {
+                //Ensure required referenced tables exist.
                 if (!usersCreated){
                     Console.WriteLine("Users not yet created. Creating Users...");
                     CreateUsers();
@@ -380,7 +391,8 @@ namespace PROG2111Project {
                     Console.WriteLine("Games not yet created. Creating Games...");
                     CreateGames();
                 }
-
+                
+                //Insert sample game-library data.
                 DbHelper.InsertRows("GameLibrary", table => {
                     DataRow r1 = table.NewRow();
                     r1["UserID"] = 1;
